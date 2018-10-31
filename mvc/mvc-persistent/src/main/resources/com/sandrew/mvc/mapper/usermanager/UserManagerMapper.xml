@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandrew.mvc.mapper.usermanager.UserManagerMapper" >
+	<resultMap id="BaseResultMap" type="com.sandrew.mvc.model.TmUserPO" >
+		<id column="USER_ID" property="userId" jdbcType="INTEGER" />
+		<result column="USER_CODE" property="userCode" jdbcType="VARCHAR" />
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+		<result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+		<result column="SEX" property="sex" jdbcType="INTEGER" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="DATE" />
+		<result column="USER_TYPE" property="userType" jdbcType="INTEGER" />
+		<result column="USER_STATUS" property="userStatus" jdbcType="INTEGER" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_BY" property="createBy" jdbcType="INTEGER" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_BY" property="updateBy" jdbcType="INTEGER" />
+	</resultMap>
+	
+	
+    <!--  分页查询List -->
+    <select id="userManagerPageQuery" resultType="com.sandrew.mvc.bean.AclUserBean" parameterType="pager">
+	    SELECT
+				tu.user_id,
+				tu.user_code,
+				tu.user_name,
+				tu.sex,
+				tu.user_status,
+				tu.phone,
+				tu.mobile,
+				tu.email,
+				tr.role_code,
+				group_concat(tr.role_name) AS role_name
+			FROM
+				tm_user tu
+			LEFT JOIN tr_user_role tur ON tu.user_id = tur.user_id
+			LEFT JOIN (
+					SELECT
+						tm_role.role_id,
+						tm_role.role_code,
+						tm_role.role_name
+					FROM
+						tm_role
+					WHERE tm_role.is_delete = ${@com.sandrew.mvc.core.common.Fixcode@IF_TYPE_NO.getFixcode()}
+					AND   tm_role.role_status = ${@com.sandrew.mvc.core.common.Fixcode@STATUS_ENABLE.getFixcode()}
+				) tr ON tr.role_id = tur.role_id
+			WHERE
+				1 = 1
+		<if test="condition.userCode != '' and condition.userCode != null">
+            AND user_code LIKE CONCAT('%',#{condition.userCode},'%')
+        </if>
+        <if test="condition.userName != '' and condition.userName != null">
+        	AND user_name LIKE CONCAT('%',#{condition.userName},'%')
+        </if>
+        <if test="condition.userStatus != null">
+        	AND user_status = #{condition.userStatus}
+        </if>
+		AND tu.is_delete = ${@com.sandrew.mvc.core.common.Fixcode@IF_TYPE_NO.getFixcode()}
+		GROUP BY user_code,is_delete   </select>
+    
+    
+    <select id="queryRelationRole" resultType="com.sandrew.mvc.model.TmRolePO" parameterType="int">
+		select tr.* from tm_role tr JOIN tr_user_role tur ON tr.role_id = tur.role_id WHERE tur.user_id = #{_parameter}
+    </select>
+    
+    <!-- 查询全部未关联角色 -->
+    <select id="getRoleExistOwn" resultType="com.sandrew.mvc.model.TmRolePO" parameterType="com.sandrew.mvc.bean.AclUserBean">
+		select
+			tr.role_id,
+			tr.role_code,
+			tr.role_name,
+			tr.role_type
+		from
+			tm_role tr
+		where
+			tr.role_status = ${@com.sandrew.mvc.core.common.Constants@STATUS_ENABLE}
+		and not exists (
+			select
+				1
+			from
+				tr_user_role tur
+			where
+				tr.role_id = tur.role_id
+			and tur.user_id = #{userId})
+			and tr.role_type = ${@com.sandrew.mvc.core.common.Fixcode@ROLE_TYPE_TECH.getFixcode()}
+			<if test="roleName != null">
+			and tr.role_name like CONCAT('%',#{roleName},'%')
+			</if>
+    </select>
+
+	<!-- 清空照片 -->
+	<update id="updateClearAvatar" parameterType="java.util.Map">
+		update
+			tm_user tu 
+		set 
+			tu.avatar = null,
+			tu.update_date = #{updateDate, jdbcType=DATE},
+			tu.update_by = #{updateBy,  jdbcType=INTEGER}
+		where 
+			tu.user_id = #{userId, jdbcType=INTEGER}
+	</update>
+    
+</mapper>
