@@ -1,7 +1,7 @@
 /**
  * <pre>
- * FILE : DistributedFormAuthenticationFilter.java
- * CLASS : DistributedFormAuthenticationFilter
+ * FILE : MyFormAuthenticationFilter.java
+ * CLASS : MyFormAuthenticationFilter
  *
  * AUTHOR : Administrator
  *
@@ -17,16 +17,13 @@
  * DESCRIPTION:
  * </pre>
  * <p/>
- * $Id: DistributedFormAuthenticationFilter.java,v 0.1 2017年5月8日 上午9:41:32 Administrator Exp $
+ * $Id: MyFormAuthenticationFilter.java,v 0.1 2017年5月8日 上午9:41:32 Administrator Exp $
  */
 
 package com.sandrew.boot.shiro;
 
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.session.Session;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
-import org.apache.shiro.web.util.WebUtils;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -38,7 +35,7 @@ import javax.servlet.ServletResponse;
  * @version    :
  */
 @Log4j2
-public class DistributedFormAuthenticationFilter extends FormAuthenticationFilter
+public class MyFormAuthenticationFilter extends FormAuthenticationFilter
 {
     @Override
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception
@@ -51,6 +48,7 @@ public class DistributedFormAuthenticationFilter extends FormAuthenticationFilte
         return super.onAccessDenied(request, response);
     }
 
+    /* 分布式时使用,暂时关闭
     @Override
     protected void issueSuccessRedirect(ServletRequest request, ServletResponse response) throws Exception
     {
@@ -64,5 +62,6 @@ public class DistributedFormAuthenticationFilter extends FormAuthenticationFilte
         }
         WebUtils.redirectToSavedRequest(request, response, fallbackUrl);
     }
+    */
 
 }
