@@ -7,8 +7,6 @@ import com.sandrew.boot.core.common.LoginResult;
 import com.sandrew.boot.core.controller.BaseController;
 import com.sandrew.boot.core.exception.ActionException;
 import com.sandrew.boot.core.exception.ServiceException;
-import com.sandrew.boot.core.nosql.MongoUtil;
-import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.login.LoginService;
 import lombok.extern.log4j.Log4j2;
 import org.apache.shiro.SecurityUtils;
@@ -16,7 +14,6 @@ import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,12 +31,6 @@ public class LoginController extends BaseController
     @Resource
     LoginService loginService;
 
-    @Resource
-    MongoTemplate mongoTemplatePri;
-
-    @Resource
-    MongoTemplate mongoTemplateSec;
-
     /**
      * 系统默认进入页面
      *
@@ -56,13 +47,6 @@ public class LoginController extends BaseController
             if(subject != null && subject.getSession() != null){
                 subject.getSession().removeAttribute(WebUtils.SAVED_REQUEST_KEY);
             }
-            MongoUtil mongoUtil = new MongoUtil(mongoTemplatePri);
-            TmUserPO user = new TmUserPO();
-            user.setUserName("weibin2");
-            mongoUtil.save("test", user);
-
-            MongoUtil mongoUtil2 = new MongoUtil(mongoTemplateSec);
-            mongoUtil2.save("key", user);
             return "login/login";
         }
         catch (Exception e)

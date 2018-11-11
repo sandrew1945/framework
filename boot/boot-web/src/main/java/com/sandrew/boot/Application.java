@@ -7,15 +7,19 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.aop.aspectj.AspectJExpressionPointcutAdvisor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.interceptor.*;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -31,6 +35,7 @@ import java.util.Properties;
 @EnableCaching
 @EnableTransactionManagement
 @Log4j2
+@Controller
 public class Application
 {
     @Value("${mybatis.custom.dbtype}")
@@ -39,9 +44,19 @@ public class Application
     @Value("${aop.pointcut.expression}")
     private String aopPointcutExpression;
 
+    @Autowired
+    private ApplicationContext applicationContext;
+
     public static void main(String[] args)
     {
         SpringApplication.run(Application.class, args);
+    }
+
+    @RequestMapping("shutdown")
+    public String stopApp()
+    {
+        SpringApplication.exit(applicationContext);
+        return "stopped ...";
     }
 
 

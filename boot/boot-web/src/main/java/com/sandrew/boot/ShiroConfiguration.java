@@ -2,7 +2,7 @@ package com.sandrew.boot;
 
 
 import com.sandrew.boot.shiro.AccountAuthorizationRealm;
-import com.sandrew.boot.shiro.DistributedFormAuthenticationFilter;
+import com.sandrew.boot.shiro.MyFormAuthenticationFilter;
 import com.sandrew.boot.shiro.session.MySqlSessionValidationScheduler;
 import com.sandrew.boot.shiro.session.RedisSessionDAO;
 import lombok.extern.log4j.Log4j2;
@@ -56,7 +56,7 @@ public class ShiroConfiguration
 
         Map<String, Filter> filters = shiroFilter.getFilters();
         filters.put("anon", new AnonymousFilter());
-        filters.put("authc", new DistributedFormAuthenticationFilter());
+        filters.put("authc", new MyFormAuthenticationFilter());
         filters.put("logout", new LogoutFilter());
         filters.put("roles", new RolesAuthorizationFilter());
         filters.put("user", new UserFilter());
@@ -67,6 +67,7 @@ public class ShiroConfiguration
         Map<String, String> filterChainDefinitionMapping = new LinkedHashMap<String, String>();
         filterChainDefinitionMapping.put("/login.html", "anon");
         filterChainDefinitionMapping.put("/", "anon");
+        filterChainDefinitionMapping.put("/shutdown", "anon");
         filterChainDefinitionMapping.put("/register/**", "anon");
         filterChainDefinitionMapping.put("/assets/**", "anon");
         filterChainDefinitionMapping.put("/images/**", "anon");
