@@ -70,6 +70,14 @@ public class MailSender
         }
     }
 
+    /**
+     *  发送模本邮件
+     * @param mailSender
+     * @param from
+     * @param to
+     * @param subject
+     * @param builder
+     */
     public static void sendTemplateMail(JavaMailSender mailSender, String from, String to, String subject, MailContentBuilder builder)
     {
         try
