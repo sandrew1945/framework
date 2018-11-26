@@ -192,8 +192,8 @@ var Layout = function () {
         });
 
         // handle ajax links within sidebar menu
-       // $('.page-sidebar').on('click', ' li > a.ajaxify', function (e) {
-        jQuery(document).on('click', 'a.ajaxify', function (e){
+        //jQuery(document).on('click', 'a.ajaxify', function (e){
+        $('.page-sidebar').on('click', ' li > a.ajaxify', function (e) {
             e.preventDefault();
             Metronic.scrollTop();
 

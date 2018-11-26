@@ -192,8 +192,8 @@ var Layout = function () {
         });
 
         // handle ajax links within sidebar menu
-       // $('.page-sidebar').on('click', ' li > a.ajaxify', function (e) {
-        jQuery(document).on('click', 'a.ajaxify', function (e){
+        //jQuery(document).on('click', 'a.ajaxify', function (e){
+        $('.page-sidebar').on('click', ' li > a.ajaxify', function (e) {
             e.preventDefault();
             Metronic.scrollTop();
 
@@ -211,14 +211,14 @@ var Layout = function () {
             });
             $(this).parents('li').addClass('active');
 
-            if (Metronic.getViewPort().width < resBreakpointMd && $('.page-sidebar').hasClass("in")) { // close the menu on mobile view while laoding a page 
+            if (Metronic.getViewPort().width < resBreakpointMd && $('.page-sidebar').hasClass("in")) { // close the menu on mobile view while laoding a page
                 $('.page-header .responsive-toggler').click();
             }
 
             Metronic.startPageLoading();
 
             var the = $(this);
-            
+
             $.ajax({
                 type: "GET",
                 cache: false,
