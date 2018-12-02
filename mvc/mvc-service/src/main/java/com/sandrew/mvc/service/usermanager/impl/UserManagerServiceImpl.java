@@ -36,6 +36,7 @@ import com.sandrew.mvc.mapper.TrUserRolePOMapper;
 import com.sandrew.mvc.mapper.usermanager.UserManagerMapper;
 import com.sandrew.mvc.model.*;
 import com.sandrew.mvc.service.usermanager.UserManagerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,6 +53,7 @@ import java.util.Map;
  * @version    :
  */
 @Service
+@Slf4j
 public class UserManagerServiceImpl implements UserManagerService
 {
 
@@ -74,6 +76,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new ServiceException("用户列表查询失败", e);
 		}
 	}
@@ -146,6 +149,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("删除用户失败", e);
 		}
 	}
@@ -161,6 +165,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("查询失败", e);
 		}
 	}
@@ -192,6 +197,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException(e.getMessage(), e);
 		}
 	}
@@ -228,6 +234,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new ServiceException("编辑用户失败", e);
 		}
 	}
@@ -241,6 +248,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("获取已有角色失败", e);
 		}
 
@@ -270,6 +278,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("删除角色失败", e);
 		}
 	}
@@ -284,6 +293,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("获取未关联角色失败", e);
 		}
 
@@ -309,6 +319,7 @@ public class UserManagerServiceImpl implements UserManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("添加角色失败", e);
 		}
 
@@ -329,6 +340,7 @@ public class UserManagerServiceImpl implements UserManagerService
 				return ajaxResult.requestFailure("用户保存失败");
 			}
 		} catch (Exception e) {
+			log.error(e.getMessage(), e);
 			throw new ServiceException("用户保存失败", e);
 		}
 	}

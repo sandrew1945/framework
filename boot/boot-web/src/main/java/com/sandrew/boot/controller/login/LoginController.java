@@ -8,7 +8,7 @@ import com.sandrew.boot.core.controller.BaseController;
 import com.sandrew.boot.core.exception.ActionException;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.service.login.LoginService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -25,9 +25,10 @@ import java.util.List;
 
 
 @Controller
-@Log4j2
+@Slf4j
 public class LoginController extends BaseController
 {
+
     @Resource
     LoginService loginService;
 

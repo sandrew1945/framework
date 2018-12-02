@@ -78,6 +78,7 @@ public class RoleManagerServiceImpl implements RoleManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("获取角色列表失败", e);
 		}
 
@@ -99,6 +100,7 @@ public class RoleManagerServiceImpl implements RoleManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("角色列表查询失败", e);
 		}
 	}
@@ -140,6 +142,7 @@ public class RoleManagerServiceImpl implements RoleManagerService
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new ServiceException("创建角色失败", e);
 		}
 	}
@@ -184,6 +187,7 @@ public class RoleManagerServiceImpl implements RoleManagerService
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new ServiceException("编辑角色失败", e);
 		}
 
@@ -231,6 +235,7 @@ public class RoleManagerServiceImpl implements RoleManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("删除角色失败", e);
 		}
 	}
@@ -268,6 +273,7 @@ public class RoleManagerServiceImpl implements RoleManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("查询功能失败", e);
 		}
 		
@@ -310,6 +316,7 @@ public class RoleManagerServiceImpl implements RoleManagerService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("添加功能失败", e);
 		}
 	}

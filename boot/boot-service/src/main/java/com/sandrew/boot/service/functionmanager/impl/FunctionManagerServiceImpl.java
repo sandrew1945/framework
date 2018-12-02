@@ -12,7 +12,7 @@ import com.sandrew.boot.mapper.functionmanager.FunctionManagerMapper;
 import com.sandrew.boot.model.TmFunctionPO;
 import com.sandrew.boot.model.TmFunctionPOExample;
 import com.sandrew.boot.service.functionmanager.FunctionManagerService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,7 +23,7 @@ import java.util.List;
  * Created by summer on 2018/2/19.
  */
 @Service
-@Log4j2
+@Slf4j
 public class FunctionManagerServiceImpl implements FunctionManagerService
 {
     @Resource

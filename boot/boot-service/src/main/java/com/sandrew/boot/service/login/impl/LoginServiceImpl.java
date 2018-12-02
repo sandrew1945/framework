@@ -41,7 +41,7 @@ import com.sandrew.boot.service.usermanager.UserManagerService;
 import com.sandrew.boot.service.util.TreeMaker;
 import com.sandrew.boot.service.util.TreeNode;
 import com.sandrew.boot.service.util.UserUtil;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
@@ -58,7 +58,7 @@ import java.util.List;
  * @version    :
  */
 @Service
-@Log4j2
+@Slf4j
 public class LoginServiceImpl implements LoginService
 {
     @Resource
@@ -122,6 +122,7 @@ public class LoginServiceImpl implements LoginService
         }
         catch (Exception e)
         {
+            log.error(e.getMessage(), e);
             throw new ServiceException("角色选择失败", e);
         }
 
@@ -140,6 +141,7 @@ public class LoginServiceImpl implements LoginService
         catch (Exception e)
         {
             e.printStackTrace();
+            log.error(e.getMessage(), e);
             throw new ServiceException("角色选择树获取失败", e);
         }
     }
@@ -155,6 +157,7 @@ public class LoginServiceImpl implements LoginService
         catch (Exception e)
         {
             e.printStackTrace();
+
             throw new ServiceException("获取菜单失败", e);
         }
         return treeStr;
@@ -168,6 +171,7 @@ public class LoginServiceImpl implements LoginService
     		treeNodes = TreeMaker.handleNode(loginMapper.getMenuInfo(roleId));
         }catch (Exception e){
             e.printStackTrace();
+            log.error(e.getMessage(), e);
             throw new ServiceException("获取菜单失败", e);
         }
     	return treeNodes;
@@ -191,6 +195,7 @@ public class LoginServiceImpl implements LoginService
         }
         catch (Exception e)
         {
+            log.error(e.getMessage(), e);
             throw new ServiceException("选择岗位、角色失败", e);
         }
     }

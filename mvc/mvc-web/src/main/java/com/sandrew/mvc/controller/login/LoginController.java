@@ -7,7 +7,7 @@ import com.sandrew.mvc.core.common.LoginResult;
 import com.sandrew.mvc.core.exception.ActionException;
 import com.sandrew.mvc.core.exception.ServiceException;
 import com.sandrew.mvc.service.login.LoginService;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UnknownAccountException;
@@ -22,8 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 
-@Log4j2
 @Controller
+@Slf4j
 public class LoginController extends BaseController
 {
 	@Resource
@@ -40,8 +40,6 @@ public class LoginController extends BaseController
 	{
 		try
 		{
-			String path = request.getSession().getServletContext().getRealPath("/");
-			System.out.println("path ============ " + path);
 			return "login/login";
 		}
 		catch (Exception e)

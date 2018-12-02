@@ -37,6 +37,7 @@ import com.sandrew.mvc.service.login.LoginService;
 import com.sandrew.mvc.service.usermanager.UserManagerService;
 import com.sandrew.mvc.service.util.TreeMaker;
 import com.sandrew.mvc.service.util.UserUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.session.Session;
@@ -54,6 +55,7 @@ import java.util.List;
  * @version    :
  */
 @Service
+@Slf4j
 public class LoginServiceImpl implements LoginService
 {
 	@Resource
@@ -116,6 +118,7 @@ public class LoginServiceImpl implements LoginService
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new ServiceException("角色选择失败", e);
 		}
 
@@ -135,6 +138,7 @@ public class LoginServiceImpl implements LoginService
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new ServiceException("角色选择树获取失败", e);
 		}
 	}
@@ -150,6 +154,7 @@ public class LoginServiceImpl implements LoginService
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new ServiceException("获取菜单失败", e);
 		}
 		return treeStr;
@@ -173,6 +178,7 @@ public class LoginServiceImpl implements LoginService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("选择岗位、角色失败", e);
 		}
 	}

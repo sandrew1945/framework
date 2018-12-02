@@ -31,6 +31,7 @@ import com.sandrew.boot.mapper.TmUserPOMapper;
 import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.model.TmUserPOExample;
 import com.sandrew.boot.service.register.RegisterService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -45,6 +46,7 @@ import java.util.List;
  * @version    :
  */
 @Service
+@Slf4j
 public class RegisterServiceImpl implements RegisterService
 {
 
@@ -76,6 +78,7 @@ public class RegisterServiceImpl implements RegisterService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("注册用户失败", e);
 		}
 	}
@@ -99,6 +102,7 @@ public class RegisterServiceImpl implements RegisterService
 		}
 		catch (Exception e)
 		{
+			log.error(e.getMessage(), e);
 			throw new ServiceException("验证用户失败", e);
 		}
 
