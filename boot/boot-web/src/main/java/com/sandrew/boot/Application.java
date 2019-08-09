@@ -95,6 +95,7 @@ public class Application
         txMap.put("delete*", requiredTx);
         txMap.put("get*", readOnlyTx);
         txMap.put("query*", readOnlyTx);
+        txMap.put("*", readOnlyTx);
         source.setNameMap(txMap);
 
         return source;
