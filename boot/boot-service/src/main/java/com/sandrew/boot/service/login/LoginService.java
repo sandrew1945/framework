@@ -2,8 +2,10 @@ package com.sandrew.boot.service.login;
 
 
 import com.sandrew.boot.bean.RoleTreeNode;
+import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.common.LoginResult;
 import com.sandrew.boot.core.exception.ServiceException;
+import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.util.TreeNode;
 
 import java.util.List;
@@ -17,6 +19,14 @@ import java.util.List;
  */
 public interface LoginService
 {
+
+	/**
+	 *  登录
+	 * @param user
+	 * @return
+	 * @throws ServiceException
+     */
+	public JsonResult login(TmUserPO user) throws ServiceException;
 
 	/**
 	 *

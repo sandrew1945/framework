@@ -16,9 +16,13 @@
  * 		  |2014年5月3日| SuMMeR| Created |
  * DESCRIPTION:
  * </pre>
- * <p/>
+ * <p>
  * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
- * <p/>
+ * <p>
+ * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
+ * <p>
+ * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
+ * <p>
  * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
  */
 /**
@@ -30,8 +34,10 @@ package com.sandrew.boot.service.login.impl;
 import com.sandrew.boot.bean.RoleTreeNode;
 import com.sandrew.boot.core.bean.AclUserBean;
 import com.sandrew.boot.core.common.Constants;
+import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.common.LoginResult;
 import com.sandrew.boot.core.exception.ServiceException;
+import com.sandrew.boot.core.shiro.MyUsernamePasswordToken;
 import com.sandrew.boot.mapper.TmRolePOMapper;
 import com.sandrew.boot.mapper.login.LoginMapper;
 import com.sandrew.boot.model.TmRolePO;
@@ -71,7 +77,44 @@ public class LoginServiceImpl implements LoginService
     @Resource
     UserManagerService userManagerService;
 
+    @Override
+    public JsonResult login(TmUserPO user) throws ServiceException
+    {
+        try
+        {
+            JsonResult result = new JsonResult();
+            Subject subject = SecurityUtils.getSubject();
+            MyUsernamePasswordToken token = new MyUsernamePasswordToken(user.getUserCode(), user.getPassword());
 
+            if (!subject.isAuthenticated())
+            {
+                subject.login(token);
+                TmUserPO databaseUser = userManagerService.getUserByCode(user.getUserCode());
+                AclUserBean loginUser = new AclUserBean();
+                loginUser.setUserCode(user.getUserCode());
+                loginUser.setUserName(databaseUser.getUserName());
+                loginUser.setSex(databaseUser.getSex());
+                loginUser.setUserType(databaseUser.getUserType());
+                loginUser.setPhone(databaseUser.getPhone());
+                loginUser.setMobile(databaseUser.getMobile());
+                loginUser.setEmail(databaseUser.getEmail());
+                loginUser.setAvatarPath(databaseUser.getAvatar());
+                loginUser.setToken(subject.getSession().getId().toString());
+                subject.getSession().setAttribute(Constants.LOGIN_USER, loginUser);
+                return result.requestSuccess(loginUser);
+            }
+            else
+            {
+                AclUserBean loginUser = (AclUserBean) subject.getSession().getAttribute(Constants.LOGIN_USER);
+                return result.requestSuccess(loginUser);
+            }
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("登录失败", e);
+        }
+    }
 
     /**
      * Function    : 用户角色选择处理器
@@ -162,21 +205,25 @@ public class LoginServiceImpl implements LoginService
         }
         return treeStr;
     }
-    
-    
+
+
     @Override
-    public List<TreeNode> getMenuTreeNode(Integer roleId) throws ServiceException {
-    	List<TreeNode> treeNodes;
-    	try{
-    		treeNodes = TreeMaker.handleNode(loginMapper.getMenuInfo(roleId));
-        }catch (Exception e){
+    public List<TreeNode> getMenuTreeNode(Integer roleId) throws ServiceException
+    {
+        List<TreeNode> treeNodes;
+        try
+        {
+            treeNodes = TreeMaker.handleNode(loginMapper.getMenuInfo(roleId));
+        }
+        catch (Exception e)
+        {
             e.printStackTrace();
             log.error(e.getMessage(), e);
             throw new ServiceException("获取菜单失败", e);
         }
-    	return treeNodes;
+        return treeNodes;
     }
-    
+
     @Override
     public String showIndex(Integer roleId) throws ServiceException
     {

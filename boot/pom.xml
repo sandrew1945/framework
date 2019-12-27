@@ -12,6 +12,7 @@
         <module>boot-persistent</module>
         <module>boot-service</module>
         <module>boot-web</module>
+        <module>boot-backend</module>
     </modules>
     <packaging>pom</packaging>
 

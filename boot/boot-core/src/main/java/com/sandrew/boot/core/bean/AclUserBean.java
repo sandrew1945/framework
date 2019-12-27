@@ -65,4 +65,6 @@ public class AclUserBean extends BaseBean
 	private String avatarPath;
 	
 	private String userStatus;
+
+	private String token;
 }

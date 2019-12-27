@@ -33,9 +33,9 @@ package com.sandrew.boot.core.common;
  */
 public class AjaxResult
 {
-	private boolean result;
+	protected boolean result;
 
-	private String msg;
+	protected String msg;
 
 	public AjaxResult requestSuccess()
 	{
