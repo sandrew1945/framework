@@ -214,7 +214,7 @@
             <dependency>
                 <groupId>org.springframework.batch</groupId>
                 <artifactId>spring-batch-core</artifactId>
-                <version>3.0.6.RELEASE</version>
+                <version>4.0.0.RELEASE</version>
             </dependency>
             <!-- Spring 管理 end -->
             <!-- Shiro 管理 start -->
