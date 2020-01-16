@@ -54,7 +54,7 @@ public class LoginController extends BaseController
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
             throw new ActionException("访问系统失败", e);
         }
 
@@ -73,7 +73,7 @@ public class LoginController extends BaseController
         JsonResult result = new JsonResult();
         try
         {
-            result = loginService.login(user);
+            result = result.requestSuccess(loginService.login(user));
         }
         catch (Exception e)
         {
@@ -86,39 +86,51 @@ public class LoginController extends BaseController
             {
                 errorMsg = "用户登录失败";
             }
+            log.error(e.getMessage(), e);
             throw new JsonException(errorMsg, e);
         }
-        // 验证验证码是否正确
-
-
-/*        Subject subject = SecurityUtils.getSubject();
-        if (subject.isAuthenticated())
-        {
-            log.debug("==============已经登录,跳转到角色选择controller==============");
-            return "forward:showRoleSelect";
-        }
-        String exceptionClassName = (String) req.getAttribute("shiroLoginFailure");
-        if (UnknownAccountException.class.getName().equals(exceptionClassName))
-        {
-            model.addAttribute("isAuthenticate", "false");
-        }
-        else if (IncorrectCredentialsException.class.getName().equals(exceptionClassName))
-        {
-            model.addAttribute("isAuthenticate", "false");
-        }
-        else if (exceptionClassName != null)
-        {
-            if ("captcha.error".equals(exceptionClassName))
-            {
-                model.addAttribute("captchaError", "false");
-            }
-            else
-            {
-                model.addAttribute("isAuthenticate", "false");
-            }
-
-        }*/
         return result;
+    }
+
+    /**
+     *  获取用户信息
+     * @return
+     * @throws JsonException
+     */
+    @RequestMapping(value = "/userInfo")
+    public @ResponseBody JsonResult userInfo() throws JsonException
+    {
+        try
+        {
+            JsonResult result = new JsonResult();
+            return result.requestSuccess(loginService.userInfo(getLoginUser()));
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+            throw new JsonException("获取用户信息失败", e);
+        }
+    }
+
+    /**
+     *  获取系统菜单
+     * @param roleId
+     * @return
+     * @throws JsonException
+     */
+    @RequestMapping(value = "/getMenuByRole")
+    public @ResponseBody JsonResult getMenuByRole(Integer roleId) throws JsonException
+    {
+        try
+        {
+            JsonResult result = new JsonResult();
+            return result.requestSuccess(loginService.getMenuByRole(roleId));
+        }
+        catch (ServiceException e)
+        {
+            log.error(e.getMessage(), e);
+            throw new JsonException("获取系统菜单失败", e);
+        }
     }
 
 
@@ -127,7 +139,6 @@ public class LoginController extends BaseController
     {
         try
         {
-
             Subject subject = SecurityUtils.getSubject();
             String userCode = ((Principal) subject.getPrincipal()).getName();
             // 验证登录用户
@@ -225,6 +236,28 @@ public class LoginController extends BaseController
             e.printStackTrace();
             throw new ActionException("选择岗位、角色失败", e);
         }
+    }
+
+    /**
+     *  登出系统
+     * @return
+     * @throws JsonException
+     */
+    @RequestMapping(value = "/logout")
+    public @ResponseBody JsonResult logout() throws JsonException
+    {
+        try
+        {
+            JsonResult result = new JsonResult();
+            loginService.logout();
+            return result.requestSuccess(true);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new JsonException("登出系统失败", e);
+        }
+
     }
 
     /**

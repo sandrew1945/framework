@@ -25,6 +25,7 @@ package com.sandrew.boot.core.bean;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -43,6 +44,8 @@ public class AclUserBean extends BaseBean
 	private String userName;
 
 	private Locale locale;
+
+	private List roleList;
 
 	private Integer roleId;
 

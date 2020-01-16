@@ -2,10 +2,11 @@ package com.sandrew.boot.service.login;
 
 
 import com.sandrew.boot.bean.RoleTreeNode;
-import com.sandrew.boot.core.common.JsonResult;
+import com.sandrew.boot.core.bean.AclUserBean;
 import com.sandrew.boot.core.common.LoginResult;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.model.TmUserPO;
+import com.sandrew.boot.service.util.MenuNode;
 import com.sandrew.boot.service.util.TreeNode;
 
 import java.util.List;
@@ -26,7 +27,22 @@ public interface LoginService
 	 * @return
 	 * @throws ServiceException
      */
-	public JsonResult login(TmUserPO user) throws ServiceException;
+	AclUserBean login(TmUserPO user) throws ServiceException;
+
+	/**
+	 *  获取用户信息
+	 * @return
+	 * @throws ServiceException
+     */
+	AclUserBean userInfo(AclUserBean loginUser) throws ServiceException;
+
+	/**
+	 *
+	 * @param roleId
+	 * @return
+	 * @throws ServiceException
+     */
+	List<MenuNode> getMenuByRole(Integer roleId) throws ServiceException;
 
 	/**
 	 *
@@ -36,7 +52,7 @@ public interface LoginService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public LoginResult postRoleHandler(String userCode) throws ServiceException;
+	LoginResult postRoleHandler(String userCode) throws ServiceException;
 
 	/**
 	 *
@@ -46,7 +62,7 @@ public interface LoginService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public List<RoleTreeNode> choiceRoleTree(Integer userId) throws ServiceException;
+	List<RoleTreeNode> choiceRoleTree(Integer userId) throws ServiceException;
 
 	/**
 	 *
@@ -56,7 +72,7 @@ public interface LoginService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public String generateMenu(Integer roleId) throws ServiceException;
+	String generateMenu(Integer roleId) throws ServiceException;
 
 	
 	/**
@@ -65,7 +81,7 @@ public interface LoginService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public List<TreeNode> getMenuTreeNode(Integer roleId) throws ServiceException;
+	List<TreeNode> getMenuTreeNode(Integer roleId) throws ServiceException;
 	/**
 	 *
 	 * Function    : 用户选择完角色进入主界面
@@ -74,6 +90,12 @@ public interface LoginService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public String showIndex(Integer roleId) throws ServiceException;
+	String showIndex(Integer roleId) throws ServiceException;
+
+	/**
+	 *  登出
+	 * @throws ServiceException
+     */
+	void logout() throws ServiceException;
 	
 }

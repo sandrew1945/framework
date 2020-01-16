@@ -74,7 +74,7 @@ public class ShiroConfiguration
         filterChainDefinitionMapping.put("/js/**", "anon");
         filterChainDefinitionMapping.put("/style/**", "anon");
         filterChainDefinitionMapping.put("/generate/**", "anon"); //生成各类
-        filterChainDefinitionMapping.put("/logout", "logout");
+//        filterChainDefinitionMapping.put("/logout", "logout");
         filterChainDefinitionMapping.put("/**/*.html", "authc");
         filterChainDefinitionMapping.put("/login", "authc");
         filterChainDefinitionMapping.put("/**", "user");

@@ -24,6 +24,8 @@
  * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
  * <p>
  * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
+ * <p>
+ * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
  */
 /**
  * $Id: LoginService.java,v 0.1 2014年5月3日 上午10:58:34 SuMMeR Exp $
@@ -34,7 +36,6 @@ package com.sandrew.boot.service.login.impl;
 import com.sandrew.boot.bean.RoleTreeNode;
 import com.sandrew.boot.core.bean.AclUserBean;
 import com.sandrew.boot.core.common.Constants;
-import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.common.LoginResult;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.core.shiro.MyUsernamePasswordToken;
@@ -44,6 +45,7 @@ import com.sandrew.boot.model.TmRolePO;
 import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.login.LoginService;
 import com.sandrew.boot.service.usermanager.UserManagerService;
+import com.sandrew.boot.service.util.MenuNode;
 import com.sandrew.boot.service.util.TreeMaker;
 import com.sandrew.boot.service.util.TreeNode;
 import com.sandrew.boot.service.util.UserUtil;
@@ -54,7 +56,10 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -78,11 +83,10 @@ public class LoginServiceImpl implements LoginService
     UserManagerService userManagerService;
 
     @Override
-    public JsonResult login(TmUserPO user) throws ServiceException
+    public AclUserBean login(TmUserPO user) throws ServiceException
     {
         try
         {
-            JsonResult result = new JsonResult();
             Subject subject = SecurityUtils.getSubject();
             MyUsernamePasswordToken token = new MyUsernamePasswordToken(user.getUserCode(), user.getPassword());
 
@@ -91,28 +95,130 @@ public class LoginServiceImpl implements LoginService
                 subject.login(token);
                 TmUserPO databaseUser = userManagerService.getUserByCode(user.getUserCode());
                 AclUserBean loginUser = new AclUserBean();
-                loginUser.setUserCode(user.getUserCode());
-                loginUser.setUserName(databaseUser.getUserName());
-                loginUser.setSex(databaseUser.getSex());
-                loginUser.setUserType(databaseUser.getUserType());
-                loginUser.setPhone(databaseUser.getPhone());
-                loginUser.setMobile(databaseUser.getMobile());
-                loginUser.setEmail(databaseUser.getEmail());
-                loginUser.setAvatarPath(databaseUser.getAvatar());
+                //                loginUser.setUserCode(user.getUserCode());
+                //                loginUser.setUserName(databaseUser.getUserName());
+                //                loginUser.setSex(databaseUser.getSex());
+                //                loginUser.setUserType(databaseUser.getUserType());
+                //                loginUser.setPhone(databaseUser.getPhone());
+                //                loginUser.setMobile(databaseUser.getMobile());
+                //                loginUser.setEmail(databaseUser.getEmail());
+                //                loginUser.setAvatarPath(databaseUser.getAvatar());
+                loginUser.setUserId(databaseUser.getUserId());
                 loginUser.setToken(subject.getSession().getId().toString());
                 subject.getSession().setAttribute(Constants.LOGIN_USER, loginUser);
-                return result.requestSuccess(loginUser);
+                return loginUser;
             }
             else
             {
                 AclUserBean loginUser = (AclUserBean) subject.getSession().getAttribute(Constants.LOGIN_USER);
-                return result.requestSuccess(loginUser);
+                return loginUser;
             }
         }
         catch (Exception e)
         {
             log.error(e.getMessage(), e);
             throw new ServiceException("登录失败", e);
+        }
+    }
+
+    @Override
+    public AclUserBean userInfo(AclUserBean loginUser) throws ServiceException
+    {
+        try
+        {
+            TmUserPO user = userManagerService.findByUserId(loginUser.getUserId());
+            loginUser.setUserCode(user.getUserCode());
+            loginUser.setUserName(user.getUserName());
+            loginUser.setSex(user.getSex());
+            loginUser.setUserType(user.getUserType());
+            loginUser.setPhone(user.getPhone());
+            loginUser.setMobile(user.getMobile());
+            loginUser.setEmail(user.getEmail());
+            loginUser.setAvatarPath(user.getAvatar());
+            List<TmRolePO> roleList = userManagerService.getRelationRolesByUserId(loginUser.getUserId());
+            loginUser.setRoleList(roleList);
+            return loginUser;
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("获取用户信息失败", e);
+        }
+    }
+
+    @Override
+    public List<MenuNode> getMenuByRole(Integer roleId) throws ServiceException
+    {
+        try
+        {
+            List<MenuNode> menuList = new ArrayList<>();
+
+            MenuNode b11 = new MenuNode();
+            b11.setPath("/menu11");
+            b11.setName("Menu-1-1");
+            b11.setComponent("b/manager/index");
+            b11.setRedirect("");
+            Map<String, String> meta = new HashMap<>();
+            meta.put("title", "菜单1-2");
+            meta.put("icon", "example");
+            b11.setMeta(meta);
+            b11.setChildren(null);
+
+            MenuNode b12 = new MenuNode();
+            b12.setPath("/menu12");
+            b12.setName("Menu-1-2");
+            b12.setComponent("/b/create/index");
+            b12.setRedirect("");
+            meta = new HashMap<>();
+            meta.put("title", "菜单1-1");
+            meta.put("icon", "example");
+            b12.setMeta(meta);
+            b12.setChildren(null);
+
+            MenuNode b1 = new MenuNode();
+            b1.setPath("/Menu1");
+            b1.setName("Menu-1");
+            b1.setComponent("/b/index");
+            b1.setRedirect("");
+            meta = new HashMap<>();
+            meta.put("title", "菜单1");
+            meta.put("icon", "example");
+            b1.setMeta(meta);
+            b1.addChildren(b11);
+            b1.addChildren(b12);
+            menuList.add(b1);
+
+            if (roleId != null && roleId.equals(1))
+            {
+                MenuNode manager = new MenuNode();
+                manager.setPath("/manager");
+                manager.setName("Manager");
+                manager.setComponent("/user/index");
+                meta = new HashMap<>();
+                meta.put("title", "用户管理");
+                meta.put("icon", "example");
+                manager.setMeta(meta);
+                manager.setChildren(null);
+
+                MenuNode user = new MenuNode();
+                user.setPath("/user");
+                user.setName("User");
+                user.setComponent("Layout");
+                user.setRedirect("");
+                meta = new HashMap<>();
+                meta.put("title", "用户管理");
+                meta.put("icon", "example");
+                user.setMeta(meta);
+                user.addChildren(manager);
+                menuList.add(user);
+            }
+
+            return menuList;
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("获取系统菜单失败", e);
         }
     }
 
@@ -247,4 +353,18 @@ public class LoginServiceImpl implements LoginService
         }
     }
 
+    @Override
+    public void logout() throws ServiceException
+    {
+        try
+        {
+            Subject subject = SecurityUtils.getSubject();
+            subject.logout();
+        }
+        catch (Exception e)
+        {
+            log.error(e.getMessage(), e);
+            throw new ServiceException("登出系统失败", e);
+        }
+    }
 }
