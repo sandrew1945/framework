@@ -17,7 +17,6 @@ import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.util.WebUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -68,7 +67,7 @@ public class LoginController extends BaseController
      * @throws ActionException
      */
     @RequestMapping(value = "/login")
-    public @ResponseBody JsonResult login(@RequestBody TmUserPO user) throws JsonException
+    public @ResponseBody JsonResult login(TmUserPO user) throws JsonException
     {
         JsonResult result = new JsonResult();
         try

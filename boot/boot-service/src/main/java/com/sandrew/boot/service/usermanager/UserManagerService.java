@@ -3,6 +3,7 @@ package com.sandrew.boot.service.usermanager;
 
 import com.sandrew.boot.core.bean.AclUserBean;
 import com.sandrew.boot.core.common.AjaxResult;
+import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.core.page.PageResult;
 import com.sandrew.boot.model.TmRolePO;
@@ -41,7 +42,7 @@ public interface UserManagerService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public AjaxResult createUserInfo(TmUserPO user, MultipartFile avatar, AclUserBean aclUser) throws ServiceException;
+	public JsonResult createUserInfo(TmUserPO user, MultipartFile avatar, AclUserBean aclUser) throws ServiceException;
 	
 	/**
 	 * 
@@ -51,7 +52,7 @@ public interface UserManagerService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public AjaxResult deleteUserInfo(Integer userId, AclUserBean aclUser) throws ServiceException;
+	public JsonResult deleteUserInfo(Integer userId, AclUserBean aclUser) throws ServiceException;
 	
 	/**
 	 * 根据用户id查询用户信息

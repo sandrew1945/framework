@@ -98,6 +98,10 @@ public class LocalFileUtil
 	 */
 	public boolean upload(String filePath, String fileName, InputStream in) throws Exception
 	{
+		if (filePath.endsWith("/"))
+		{
+			filePath = filePath.substring(0, filePath.length() - 1);
+		}
 		return this.upload(filePath + File.separator + fileName, in);
 	}
 

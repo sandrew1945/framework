@@ -5,18 +5,17 @@ import com.sandrew.boot.core.bean.AclUserBean;
 import com.sandrew.boot.core.bean.BaseCondition;
 import com.sandrew.boot.core.common.AjaxResult;
 import com.sandrew.boot.core.common.Constants;
+import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.controller.BaseController;
 import com.sandrew.boot.core.exception.ActionException;
 import com.sandrew.boot.core.exception.JsonException;
-import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.core.page.PageResult;
 import com.sandrew.boot.model.TmRolePO;
 import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.usermanager.UserManagerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -25,7 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-
+@Slf4j
 @Controller
 @RequestMapping("/usermanager")
 @SessionAttributes(value = {Constants.CONDITION}, types = {BaseCondition.class})
@@ -33,30 +32,6 @@ public class UserManagerController extends BaseController
 {
     @Resource
     private UserManagerService userManagerService;
-
-    /**
-     * 进入用户查询页面,清空session中的条件回显
-     *
-     * @return String
-     */
-    @RequestMapping(value = "/initUsermanagerPre")
-    public String initUsermanagerPre(SessionStatus status) throws ActionException
-    {
-        status.setComplete();
-        return "userManager/usermanager";
-    }
-
-    /**
-     * 进入用户查询页面
-     *
-     * @return String
-     */
-    @RequestMapping(value = "/usermanagerPre")
-    public String usermanagerPre() throws ActionException
-    {
-
-        return "userManager/usermanager";
-    }
 
     /**
      * 用户信息查询所有
@@ -82,64 +57,42 @@ public class UserManagerController extends BaseController
     }
 
     /**
-     * Function    : 进入创建用户
-     * LastUpdate  : 2016年4月16日
-     *
+     *  根据ID获取用户信息
+     * @param userId
      * @return
+     * @throws JsonException
      */
-    @RequestMapping(value = "/createUserInfoPre")
-    public String createUserInfoPre() throws ActionException
-    {
-        return "userManager/createUserInfo";
-    }
-
-    /**
-     * Function    : 编辑用户信息
-     * LastUpdate  : 2016年4月16日
-     *
-     * @return
-     */
-    @RequestMapping(value = "/updateUserInfoPre")
-    public String updateUserInfoPre(Integer userId, Model model) throws ActionException
+    @RequestMapping("getUserInfoById")
+    public @ResponseBody JsonResult getUserInfoById(Integer userId) throws JsonException
     {
         try
         {
+            JsonResult result = new JsonResult();
             TmUserPO user = userManagerService.findByUserId(userId);
-            model.addAttribute("userPO", user);
+            return result.requestSuccess(user);
         }
-        catch (ServiceException e)
+        catch (Exception e)
         {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            log.error(e.getMessage(), e);
+            throw new JsonException("获取用户信息失败", e);
         }
-        return "userManager/updateOfUser";
     }
 
     /**
      * 用户信息保存
      *
      * @param user
-     * @param file
      * @return
      * @throws IOException
      */
     @RequestMapping(value = "/createUserInfo")
     public
     @ResponseBody
-    AjaxResult createUserInfo(TmUserPO user, @RequestParam(value = "file", required = false) MultipartFile file) throws JsonException
+    JsonResult createUserInfo(TmUserPO user) throws JsonException
     {
         try
         {
-            if (file != null)
-            {
-                // 上传文件到文件服务器
-                //				AbstractManager manager = new FTPManager();
-                //				FileServer fileserver = new FileServer(manager);
-                //				String filePath = fileserver.upload(file.getOriginalFilename(),
-                //						((FileInputStream) file.getInputStream()));
-                //				user.setAvatar(filePath);
-            }
-            return userManagerService.createUserInfo(user, file, getLoginUser());
+            return userManagerService.createUserInfo(user, null, getLoginUser());
         }
         catch (Exception e)
         {
@@ -152,18 +105,17 @@ public class UserManagerController extends BaseController
      * 用户信息编辑
      *
      * @param user
-     * @param avatar
      * @return
      * @throws IOException
      */
     @RequestMapping(value = "/updateUserInfo")
     public
     @ResponseBody
-    AjaxResult updateUserInfo(TmUserPO user, @RequestParam(value = "avatar", required = false) MultipartFile avatar) throws JsonException
+    AjaxResult updateUserInfo(TmUserPO user) throws JsonException
     {
         try
         {
-            return userManagerService.updateUserInfo(user, avatar, getLoginUser());
+            return userManagerService.updateUserInfo(user, null, getLoginUser());
         }
         catch (Exception e)
         {
@@ -183,7 +135,7 @@ public class UserManagerController extends BaseController
     @RequestMapping(value = "/deleteUserInfo")
     public
     @ResponseBody
-    AjaxResult deleteUserInfo(Integer userId) throws JsonException
+    JsonResult deleteUserInfo(Integer userId) throws JsonException
     {
         try
         {
@@ -195,30 +147,6 @@ public class UserManagerController extends BaseController
             throw new JsonException(e.getMessage(), e);
         }
     }
-
-
-    /**
-     * Function    : 跳转编辑个人信息页面
-     * LastUpdate  : 2016年4月16日
-     *
-     * @return
-     */
-    @RequestMapping(value = "/profilePre")
-    public String profilePre(Integer userId, Model model) throws JsonException
-    {
-        try
-        {
-            TmUserPO user = userManagerService.findByUserId(userId);
-            model.addAttribute("userPO", user);
-        }
-        catch (ServiceException e)
-        {
-            e.printStackTrace();
-            throw new JsonException(e.getMessage(), e);
-        }
-        return "userManager/updateProfile";
-    }
-
 
     /**
      * @return
@@ -253,25 +181,6 @@ public class UserManagerController extends BaseController
         {
             e.printStackTrace();
             throw new JsonException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * 维护角色关系PRE
-     *
-     * @return
-     * @throws ActionException
-     */
-    @RequestMapping("roleRelationManagerPre")
-    public String roleRelationManagerPre() throws ActionException
-    {
-        try
-        {
-            return "userManager/rolerelationmanager";
-        }
-        catch (Exception e)
-        {
-            throw new ActionException(e.getMessage(), e);
         }
     }
 
@@ -365,6 +274,7 @@ public class UserManagerController extends BaseController
             throw new JsonException(e.getMessage(), e);
         }
     }
+
 
     /**
      * 查看头像
