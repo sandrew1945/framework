@@ -64,7 +64,6 @@ public class GenerateImageController
     @RequestMapping("loadImage")
     public void loadImage(String filePath, HttpServletResponse response) throws ActionException
     {
-        log.debug("loadImage------------------");
         OutputStream outputStream = null;
         try
         {

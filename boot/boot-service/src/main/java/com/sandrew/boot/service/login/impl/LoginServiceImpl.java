@@ -39,8 +39,11 @@ import com.sandrew.boot.core.common.Constants;
 import com.sandrew.boot.core.common.LoginResult;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.core.shiro.MyUsernamePasswordToken;
+import com.sandrew.boot.mapper.TmFuncFrontMapper;
 import com.sandrew.boot.mapper.TmRolePOMapper;
 import com.sandrew.boot.mapper.login.LoginMapper;
+import com.sandrew.boot.model.TmFuncFront;
+import com.sandrew.boot.model.TmFuncFrontExample;
 import com.sandrew.boot.model.TmRolePO;
 import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.login.LoginService;
@@ -76,11 +79,14 @@ public class LoginServiceImpl implements LoginService
     private TmRolePOMapper roleMapper;
 
     @Resource
-    LoginMapper loginMapper;
-
+    private LoginMapper loginMapper;
 
     @Resource
-    UserManagerService userManagerService;
+    private TmFuncFrontMapper tmFuncFrontMapper;
+
+    @Resource
+    private UserManagerService userManagerService;
+
 
     @Override
     public AclUserBean login(TmUserPO user) throws ServiceException
@@ -151,6 +157,34 @@ public class LoginServiceImpl implements LoginService
     {
         try
         {
+            TmFuncFrontExample example = new TmFuncFrontExample();
+            TmFuncFrontExample.Criteria criteria = example.createCriteria();
+            criteria.andRoleIdEqualTo(roleId);
+            List<TmFuncFront> functionList = tmFuncFrontMapper.selectByExample(example);
+            List<MenuNode> menuList = new ArrayList<>();
+            Map<Integer, MenuNode> cache = new HashMap<>();
+            for (TmFuncFront funcFront : functionList)
+            {
+                MenuNode menu = new MenuNode();
+                menu.setPath(funcFront.getPath());
+                menu.setName(funcFront.getName());
+                menu.setComponent(funcFront.getFile());
+                menu.setRedirect(funcFront.getRedirect());
+                Map<String, String> meta = new HashMap<>();
+                meta.put("title", funcFront.getTitle());
+                meta.put("icon", funcFront.getIcon());
+                menu.setMeta(meta);
+                cache.put(funcFront.getFuncId(), menu);
+                if (null != funcFront.getFatherId())
+                {
+                    // 如果存在父节点，那么将子节点添加到父节点，并且不添加到menuList中
+                    MenuNode father = cache.get(funcFront.getFatherId());
+                    father.addChildren(menu);
+                    continue;
+                }
+                menuList.add(menu);
+            }
+            /*
             List<MenuNode> menuList = new ArrayList<>();
 
             MenuNode b11 = new MenuNode();
@@ -191,7 +225,7 @@ public class LoginServiceImpl implements LoginService
             if (roleId != null && roleId.equals(1))
             {
                 MenuNode manager = new MenuNode();
-                manager.setPath("/manager");
+                manager.setPath("manager");
                 manager.setName("Manager");
                 manager.setComponent("/user/index");
                 meta = new HashMap<>();
@@ -211,8 +245,30 @@ public class LoginServiceImpl implements LoginService
                 user.setMeta(meta);
                 user.addChildren(manager);
                 menuList.add(user);
-            }
 
+                MenuNode roleManager = new MenuNode();
+                roleManager.setPath("manager");
+                roleManager.setName("Manager");
+                roleManager.setComponent("/role/index");
+                meta = new HashMap<>();
+                meta.put("title", "角色管理");
+                meta.put("icon", "example");
+                roleManager.setMeta(meta);
+                roleManager.setChildren(null);
+
+                MenuNode role = new MenuNode();
+                role.setPath("/role");
+                role.setName("Role");
+                role.setComponent("Layout");
+                role.setRedirect("");
+                meta = new HashMap<>();
+                meta.put("title", "角色管理");
+                meta.put("icon", "example");
+                role.setMeta(meta);
+                role.addChildren(roleManager);
+                menuList.add(role);
+            }
+            */
             return menuList;
         }
         catch (Exception e)

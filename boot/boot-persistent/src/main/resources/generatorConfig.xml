@@ -40,7 +40,16 @@
     	<columnOverride column="create_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
     	<columnOverride column="update_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
 	</table>
-
+    <table schema="" tableName="tm_func_front" domainObjectName="TmFuncFront" enableCountByExample="true" enableSelectByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" selectByExampleQueryId="true">
+		<generatedKey column="func_id" sqlStatement="JDBC" identity="true" />
+		<columnOverride column="create_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <columnOverride column="update_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+    </table>
+	<table schema="" tableName="tr_role_func_front" domainObjectName="TrRoleFuncFront" enableCountByExample="true" enableSelectByExample="true" enableUpdateByExample="true" enableDeleteByExample="true" selectByExampleQueryId="true">
+        <generatedKey column="id" sqlStatement="JDBC" identity="true" />
+        <columnOverride column="create_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+        <columnOverride column="update_date" jdbcType="TIMESTAMP" javaType="java.util.Date"/>
+	</table>
 
   </context>
 </generatorConfiguration>

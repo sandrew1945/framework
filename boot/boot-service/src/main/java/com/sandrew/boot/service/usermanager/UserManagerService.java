@@ -102,7 +102,7 @@ public interface UserManagerService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public AjaxResult deleteRoleRelation(Integer userId, Integer roleId) throws ServiceException;
+	public JsonResult deleteRoleRelation(Integer userId, Integer roleId) throws ServiceException;
 	
 	/**
 	 * 

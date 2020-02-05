@@ -10,7 +10,6 @@ import com.sandrew.boot.core.controller.BaseController;
 import com.sandrew.boot.core.exception.ActionException;
 import com.sandrew.boot.core.exception.JsonException;
 import com.sandrew.boot.core.page.PageResult;
-import com.sandrew.boot.model.TmRolePO;
 import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.usermanager.UserManagerService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +21,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -192,11 +190,12 @@ public class UserManagerController extends BaseController
     @RequestMapping(value = "/queryRelationRoles")
     public
     @ResponseBody
-    List<TmRolePO> queryRelationRoles(Integer userId) throws JsonException
+    JsonResult queryRelationRoles(Integer userId) throws JsonException
     {
+        JsonResult result = new JsonResult();
         try
         {
-            return userManagerService.getRelationRolesByUserId(userId);
+            return result.requestSuccess(userManagerService.getRelationRolesByUserId(userId));
         }
         catch (Exception e)
         {
@@ -209,7 +208,7 @@ public class UserManagerController extends BaseController
     @RequestMapping(value = "/deleteRoleRelation")
     public
     @ResponseBody
-    AjaxResult deleteRoleRelation(Integer userId, Integer roleId) throws JsonException
+    JsonResult deleteRoleRelation(Integer userId, Integer roleId) throws JsonException
     {
         try
         {
@@ -234,14 +233,15 @@ public class UserManagerController extends BaseController
     @RequestMapping(value = "/queryUnRelationRoles")
     public
     @ResponseBody
-    List<TmRolePO> queryUnRelationRoles(Integer userId, String roleName) throws JsonException
+    JsonResult queryUnRelationRoles(Integer userId, String roleName) throws JsonException
     {
+        JsonResult result = new JsonResult();
         try
         {
             AclUserBean aclUser = new AclUserBean();
             aclUser.setUserId(userId);
             aclUser.setRoleName(roleName);
-            return userManagerService.getUnRelationRoles(aclUser);
+            return result.requestSuccess(userManagerService.getUnRelationRoles(aclUser));
         }
         catch (Exception e)
         {

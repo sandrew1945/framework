@@ -4,10 +4,12 @@ package com.sandrew.boot.service.rolemanager;
 import com.sandrew.boot.bean.RoleBean;
 import com.sandrew.boot.core.bean.AclUserBean;
 import com.sandrew.boot.core.common.AjaxResult;
+import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.core.page.PageResult;
 import com.sandrew.boot.model.TmFunctionPO;
 import com.sandrew.boot.model.TmRolePO;
+import com.sandrew.boot.service.util.MenuNode;
 
 import java.util.List;
 
@@ -77,7 +79,7 @@ public interface RoleManagerService
 	 * @return
 	 * @throws ServiceException
 	 */
-	public AjaxResult deleteRole(Integer roleId, AclUserBean aclUser) throws ServiceException;
+	public JsonResult deleteRole(Integer roleId, AclUserBean aclUser) throws ServiceException;
 
 	/**
 	 * 
@@ -122,4 +124,22 @@ public interface RoleManagerService
 	 * @throws ServiceException
 	 */
 	public AjaxResult createRelation(Integer roleId, String funcsStr, AclUserBean loginUser) throws ServiceException;
+
+	/**
+	 *  保存权限
+	 * @param roleId
+	 * @param nodes
+	 * @param loginUser
+	 * @return
+	 * @throws ServiceException
+     */
+	JsonResult savePermission(Integer roleId, List<MenuNode> nodes, AclUserBean loginUser) throws ServiceException;
+
+	/**
+	 * 	获取已选择菜单
+	 * @param roleId
+	 * @return
+	 * @throws ServiceException
+     */
+	JsonResult getCheckPermission(Integer roleId) throws ServiceException;
 }

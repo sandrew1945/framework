@@ -11,6 +11,8 @@ import com.sandrew.boot.core.exception.JsonException;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.login.LoginService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @Controller
 @Slf4j
+@Api(tags = "登录相关接口", description = "提供用户登录相关的 API")
 public class LoginController extends BaseController
 {
 
@@ -67,6 +70,7 @@ public class LoginController extends BaseController
      * @throws ActionException
      */
     @RequestMapping(value = "/login")
+    @ApiOperation("登录")
     public @ResponseBody JsonResult login(TmUserPO user) throws JsonException
     {
         JsonResult result = new JsonResult();

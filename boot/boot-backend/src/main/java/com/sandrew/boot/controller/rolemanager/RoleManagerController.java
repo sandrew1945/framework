@@ -23,10 +23,12 @@
 package com.sandrew.boot.controller.rolemanager;
 
 
+import com.sandrew.boot.bean.PermissionParam;
 import com.sandrew.boot.bean.RoleBean;
 import com.sandrew.boot.core.bean.BaseCondition;
 import com.sandrew.boot.core.common.AjaxResult;
 import com.sandrew.boot.core.common.Constants;
+import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.controller.BaseController;
 import com.sandrew.boot.core.exception.ActionException;
 import com.sandrew.boot.core.exception.JsonException;
@@ -35,8 +37,10 @@ import com.sandrew.boot.core.page.PageResult;
 import com.sandrew.boot.model.TmFunctionPO;
 import com.sandrew.boot.model.TmRolePO;
 import com.sandrew.boot.service.rolemanager.RoleManagerService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -53,6 +57,7 @@ import java.util.List;
  * CreateDate  : 2016年5月30日
  * @version    :
  */
+@Slf4j
 @Controller
 @RequestMapping("/rolemanager")
 @SessionAttributes(value = { Constants.CONDITION }, types = { BaseCondition.class })
@@ -142,6 +147,28 @@ public class RoleManagerController extends BaseController
 	}
 
 	/**
+	 *  根据ID查询角色信息
+	 * @param roleId
+	 * @return
+	 * @throws JsonException
+     */
+	@RequestMapping("getRoleInfoById")
+	public @ResponseBody JsonResult getRoleInfoById(Integer roleId) throws JsonException
+	{
+		JsonResult result = new JsonResult();
+		try
+		{
+			TmRolePO role = roleManagerService.findByroleId(roleId);
+			return result.requestSuccess(role);
+		}
+		catch (ServiceException e)
+		{
+			log.error(e.getMessage(), e);
+			throw new JsonException("查询角色失败", e);
+		}
+	}
+
+	/**
 	 * Function    : 角色信息保存
 	 * LastUpdate  : 2016年5月30日
 	 * @param user 保存内容
@@ -195,8 +222,9 @@ public class RoleManagerController extends BaseController
 	 */
 	@RequestMapping(value = "/deleteRole")
 	public @ResponseBody
-	AjaxResult deleteRole(Integer roleId) throws JsonException
+	JsonResult deleteRole(Integer roleId) throws JsonException
 	{
+		JsonResult result = new JsonResult();
 		try
 		{
 			//删除角色的时候 需要判断 该角色是否分配给其他人 如果未分配咋可以删除 如果已分配 则不可以删除
@@ -315,4 +343,37 @@ public class RoleManagerController extends BaseController
 		}
 	}
 
+	@RequestMapping("savePermission")
+	public @ResponseBody JsonResult savePermission(@RequestBody PermissionParam parameter) throws JsonException
+	{
+		try
+		{
+			return roleManagerService.savePermission(parameter.getRoleId(), parameter.getNode(), getLoginUser());
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage(), e);
+			throw new JsonException("保存权限失败", e);
+		}
+	}
+
+	/**
+	 *	获取已选菜单
+	 * @param roleId
+	 * @return
+	 * @throws JsonResult
+     */
+	@RequestMapping("getCheckedPremission")
+	public @ResponseBody JsonResult getCheckedPremission(Integer roleId) throws JsonException
+	{
+		try
+		{
+			return roleManagerService.getCheckPermission(roleId);
+		}
+		catch (Exception e)
+		{
+			log.error(e.getMessage(), e);
+			throw new JsonException("保存权限失败", e);
+		}
+	}
 }

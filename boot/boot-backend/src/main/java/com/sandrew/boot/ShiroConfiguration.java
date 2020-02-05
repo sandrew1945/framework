@@ -74,6 +74,11 @@ public class ShiroConfiguration
         filterChainDefinitionMapping.put("/js/**", "anon");
         filterChainDefinitionMapping.put("/style/**", "anon");
         filterChainDefinitionMapping.put("/generate/**", "anon"); //生成各类
+        filterChainDefinitionMapping.put("/v2/**", "anon"); //swagger API
+        filterChainDefinitionMapping.put("/webjars/**", "anon"); //swagger-ui
+        filterChainDefinitionMapping.put("/swagger-ui.html", "anon"); //swagger-ui
+        filterChainDefinitionMapping.put("/swagger-resources/**", "anon"); //swagger-ui
+        filterChainDefinitionMapping.put("/csrf", "anon"); //swagger-ui
 //        filterChainDefinitionMapping.put("/logout", "logout");
         filterChainDefinitionMapping.put("/**/*.html", "authc");
         filterChainDefinitionMapping.put("/login", "authc");

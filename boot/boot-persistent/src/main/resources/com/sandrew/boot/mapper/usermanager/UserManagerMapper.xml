@@ -71,7 +71,8 @@
 			tr.role_id,
 			tr.role_code,
 			tr.role_name,
-			tr.role_type
+			tr.role_type,
+			tr.role_status
 		from
 			tm_role tr
 		where
@@ -84,7 +85,7 @@
 			where
 				tr.role_id = tur.role_id
 			and tur.user_id = #{userId})
-			<if test="roleName != null">
+			<if test="roleName != null and roleName != ''">
 			and tr.role_name like CONCAT('%',#{roleName},'%')
 			</if>
     </select>

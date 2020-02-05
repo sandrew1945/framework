@@ -43,7 +43,6 @@ import com.sandrew.boot.service.usermanager.UserManagerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -163,7 +162,7 @@ public class UserManagerServiceImpl implements UserManagerService
 
 
     @Override
-    @Cacheable(key = "#userId")
+    //@Cacheable(key = "#userId")
     public TmUserPO findByUserId(Integer userId) throws ServiceException
     {
 
@@ -271,11 +270,11 @@ public class UserManagerServiceImpl implements UserManagerService
     }
 
     @Override
-    public AjaxResult deleteRoleRelation(Integer userId, Integer roleId) throws ServiceException
+    public JsonResult deleteRoleRelation(Integer userId, Integer roleId) throws ServiceException
     {
         try
         {
-            AjaxResult result = new AjaxResult();
+            JsonResult result = new JsonResult();
 
             TrUserRolePO userRole = new TrUserRolePO();
             userRole.setUserId(userId);
@@ -288,7 +287,7 @@ public class UserManagerServiceImpl implements UserManagerService
             int count = trUserRolePOMapper.deleteByExample(example);
             if (count > 0)
             {
-                result.requestSuccess();
+                result.requestSuccess(true);
             }
             else
             {
