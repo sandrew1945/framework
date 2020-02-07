@@ -1,6 +1,7 @@
 package com.sandrew.boot.service.util;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -15,11 +16,17 @@ import java.util.Map;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MenuNode implements Comparable
 {
+    @ApiModelProperty("Url")
     private String path;
+    @ApiModelProperty("名称")
     private String name;
+    @ApiModelProperty("页面所在路径")
     private String component;
+    @ApiModelProperty("重定向")
     private String redirect;
+    @ApiModelProperty("元数据，如：title: 'Dashboard', icon: 'dashboard'")
     private Map<String, String> meta;
+    @ApiModelProperty("子节点集合")
     private List<MenuNode> children = new ArrayList<>();
 
     public MenuNode()

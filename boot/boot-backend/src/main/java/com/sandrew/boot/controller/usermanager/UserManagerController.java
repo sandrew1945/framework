@@ -7,23 +7,22 @@ import com.sandrew.boot.core.common.AjaxResult;
 import com.sandrew.boot.core.common.Constants;
 import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.controller.BaseController;
-import com.sandrew.boot.core.exception.ActionException;
 import com.sandrew.boot.core.exception.JsonException;
 import com.sandrew.boot.core.page.PageResult;
 import com.sandrew.boot.model.TmUserPO;
 import com.sandrew.boot.service.usermanager.UserManagerService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
 
 @Slf4j
 @Controller
+@Api(tags = "用户管理相关接口", description = "提供用户管理相关的 API")
 @RequestMapping("/usermanager")
 @SessionAttributes(value = {Constants.CONDITION}, types = {BaseCondition.class})
 public class UserManagerController extends BaseController
@@ -31,20 +30,18 @@ public class UserManagerController extends BaseController
     @Resource
     private UserManagerService userManagerService;
 
-    /**
-     * 用户信息查询所有
-     *
-     * @param condition
-     * @param curPage
-     * @return
-     */
-    @RequestMapping(value = "/userManagerPageQuery")
+    @ApiOperation("用户查询（分页）")
+    @PostMapping(value = "/userManagerPageQuery")
     public
     @ResponseBody
-    PageResult<TmUserPO> userManagerPageQuery(TmUserPO condition, int curPage) throws JsonException
+    PageResult<TmUserPO> userManagerPageQuery(@RequestParam(required = false) String userCode, @RequestParam(required = false) String userName, @RequestParam(required = false) Integer userStatus, int limit, int curPage) throws JsonException
     {
         try
         {
+            TmUserPO condition = new TmUserPO();
+            condition.setUserCode(userCode);
+            condition.setUserName(userName);
+            condition.setUserStatus(userStatus);
             return userManagerService.userManagerPageQuery(condition, curPage);
         }
         catch (Exception e)
@@ -54,13 +51,9 @@ public class UserManagerController extends BaseController
 
     }
 
-    /**
-     *  根据ID获取用户信息
-     * @param userId
-     * @return
-     * @throws JsonException
-     */
-    @RequestMapping("getUserInfoById")
+
+    @ApiOperation("根据ID获取用户信息")
+    @GetMapping("getUserInfoById")
     public @ResponseBody JsonResult getUserInfoById(Integer userId) throws JsonException
     {
         try
@@ -76,14 +69,9 @@ public class UserManagerController extends BaseController
         }
     }
 
-    /**
-     * 用户信息保存
-     *
-     * @param user
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping(value = "/createUserInfo")
+
+    @ApiOperation("创建用户信息")
+    @PostMapping(value = "/createUserInfo")
     public
     @ResponseBody
     JsonResult createUserInfo(TmUserPO user) throws JsonException
@@ -99,14 +87,9 @@ public class UserManagerController extends BaseController
         }
     }
 
-    /**
-     * 用户信息编辑
-     *
-     * @param user
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping(value = "/updateUserInfo")
+
+    @ApiOperation("用户信息编辑")
+    @PostMapping(value = "/updateUserInfo")
     public
     @ResponseBody
     AjaxResult updateUserInfo(TmUserPO user) throws JsonException
@@ -122,15 +105,8 @@ public class UserManagerController extends BaseController
         }
     }
 
-    /**
-     * Function    : 删除用户
-     * LastUpdate  : 2016年4月16日
-     *
-     * @param userId
-     * @return
-     * @throws ActionException
-     */
-    @RequestMapping(value = "/deleteUserInfo")
+    @ApiOperation("删除用户")
+    @PostMapping(value = "/deleteUserInfo")
     public
     @ResponseBody
     JsonResult deleteUserInfo(Integer userId) throws JsonException
@@ -146,48 +122,8 @@ public class UserManagerController extends BaseController
         }
     }
 
-    /**
-     * @return
-     * @throws IOException
-     */
-    @RequestMapping(value = "/updateProfile")
-    public
-    @ResponseBody
-    AjaxResult updateProfile(TmUserPO user, @RequestParam(value = "file", required = false) MultipartFile file) throws JsonException
-    {
-        try
-        {
-            if (file == null && user.getAvatar() == null && "".equals(user.getAvatar()))
-            {
-                //如果页面没有照片信息，清空照片
-                userManagerService.updateClearAvatar(user.getUserId(), getLoginUser());
-            }
-            else
-            {
-                if (file != null)
-                {
-                    // 上传文件到文件服务器
-                    // AbstractManager manager = new FTPManager();
-                    // FileServer fileserver = new FileServer(manager);
-                    // String filePath = fileserver.upload(file.getOriginalFilename(), ((FileInputStream) file.getInputStream()));
-                    // user.setAvatar(filePath);
-                }
-            }
-            return userManagerService.updateUserInfo(user, file, getLoginUser());
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            throw new JsonException(e.getMessage(), e);
-        }
-    }
-
-    /**
-     * @param userId
-     * @return
-     * @throws JsonException
-     */
-    @RequestMapping(value = "/queryRelationRoles")
+    @ApiOperation("根据用户ID查询用户的角色")
+    @GetMapping(value = "/queryRelationRoles")
     public
     @ResponseBody
     JsonResult queryRelationRoles(Integer userId) throws JsonException
@@ -205,7 +141,8 @@ public class UserManagerController extends BaseController
     }
 
 
-    @RequestMapping(value = "/deleteRoleRelation")
+    @ApiOperation("删除该用户的指定角色")
+    @PostMapping(value = "/deleteRoleRelation")
     public
     @ResponseBody
     JsonResult deleteRoleRelation(Integer userId, Integer roleId) throws JsonException
@@ -221,19 +158,11 @@ public class UserManagerController extends BaseController
         }
     }
 
-    /**
-     * Function    : 查询该userId全部未关联角色
-     * LastUpdate  : 2016年9月22日
-     *
-     * @param userId
-     * @param roleName
-     * @return
-     * @throws JsonException
-     */
-    @RequestMapping(value = "/queryUnRelationRoles")
+    @ApiOperation("查询该用户全部未关联角色")
+    @GetMapping(value = "/queryUnRelationRoles")
     public
     @ResponseBody
-    JsonResult queryUnRelationRoles(Integer userId, String roleName) throws JsonException
+    JsonResult queryUnRelationRoles(Integer userId, @ApiParam(name = "roleName", value = "过滤条件") String roleName) throws JsonException
     {
         JsonResult result = new JsonResult();
         try
@@ -250,19 +179,12 @@ public class UserManagerController extends BaseController
         }
     }
 
-    /**
-     * Function    : 创建用户与角色关系
-     * LastUpdate  : 2016年9月22日
-     *
-     * @param userId
-     * @param rolesStr
-     * @return
-     * @throws JsonException
-     */
-    @RequestMapping(value = "/createRelation")
+
+    @ApiOperation("为用户增加指定角色")
+    @PostMapping(value = "/createRelation")
     public
     @ResponseBody
-    AjaxResult createRelation(Integer userId, String rolesStr) throws JsonException
+    AjaxResult createRelation(Integer userId, @ApiParam(name="rolesStr", value = "角色ID串，用','分割，如：1,2,5") String rolesStr) throws JsonException
     {
         try
         {
@@ -272,35 +194,6 @@ public class UserManagerController extends BaseController
         {
             e.printStackTrace();
             throw new JsonException(e.getMessage(), e);
-        }
-    }
-
-
-    /**
-     * 查看头像
-     *
-     * @param avatarPath
-     * @param response
-     * @throws ActionException
-     */
-    @RequestMapping(value = "/showAvatar", method = RequestMethod.GET)
-    public void showAvatar(String avatarPath, HttpServletResponse response) throws ActionException
-    {
-        OutputStream outputStream = null;
-        try
-        {
-            // 文件服务器下载附件
-            //			AbstractManager manager = new FTPManager();
-            //			FileServer fileserver = new FileServer(manager);
-            //			byte[] bytes = fileserver.download(avatarPath);
-            //			outputStream = response.getOutputStream();
-            //			response.setContentType("application/octet-stream;charset=UTF-8");
-            //			FileCopyUtils.copy(bytes, outputStream);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-            throw new ActionException("查看头像失败", e);
         }
     }
 }

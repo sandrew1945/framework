@@ -30,25 +30,19 @@ import com.sandrew.boot.core.common.AjaxResult;
 import com.sandrew.boot.core.common.Constants;
 import com.sandrew.boot.core.common.JsonResult;
 import com.sandrew.boot.core.controller.BaseController;
-import com.sandrew.boot.core.exception.ActionException;
 import com.sandrew.boot.core.exception.JsonException;
 import com.sandrew.boot.core.exception.ServiceException;
 import com.sandrew.boot.core.page.PageResult;
-import com.sandrew.boot.model.TmFunctionPO;
 import com.sandrew.boot.model.TmRolePO;
 import com.sandrew.boot.service.rolemanager.RoleManagerService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.io.IOException;
-import java.util.List;
 
 
 /**
@@ -58,6 +52,7 @@ import java.util.List;
  * @version    :
  */
 @Slf4j
+@Api(tags = "角色管理相关接口", description = "提供角色管理相关的 API")
 @Controller
 @RequestMapping("/rolemanager")
 @SessionAttributes(value = { Constants.CONDITION }, types = { BaseCondition.class })
@@ -66,43 +61,18 @@ public class RoleManagerController extends BaseController
 	@Resource
 	private RoleManagerService roleManagerService;//角色处理的service
 
-	/**
-	 * Function    : 进入角色查询页面,清空session中的条件回显
-	 * LastUpdate  : 2016年5月30日
-	 * @return String
-	 */
-	@RequestMapping(value = "/initRolemanagerPre")
-	public String initRolemanagerPre(SessionStatus status) throws ActionException
-	{
-		status.setComplete();
-		return "roleManager/rolemanager";
-	}
 
-	/**
-	 *  Function    :进入角色查询页面
-	 *  LastUpdate  : 2016年5月30日
-	 * @return String
-	 */
-	@RequestMapping(value = "/rolemanagerPre")
-	public String usermanagerPre() throws ActionException
-	{
-
-		return "roleManager/rolemanager";
-	}
-
-	/**
-	 * Function    :角色信息查询所有
-	 * LastUpdate  : 2016年5月30日
-	 * @param condition 查询条件
-	 * @param curPage 分页信息
-	 * @return
-	 */
-	@RequestMapping(value = "/roleManagerPageQuery")
+	@ApiOperation("角色查询（分页）")
+	@PostMapping(value = "/roleManagerPageQuery")
 	public @ResponseBody
-	PageResult<RoleBean> userManagerPageQuery(TmRolePO condition, int curPage) throws JsonException
+	PageResult<RoleBean> userManagerPageQuery(@RequestParam(required = false) String roleCode, @RequestParam(required = false) String roleName, @RequestParam(required = false) Integer roleStatus, int curPage) throws JsonException
 	{
 		try
 		{
+			TmRolePO condition = new TmRolePO();
+			condition.setRoleCode(roleCode);
+			condition.setRoleName(roleName);
+			condition.setRoleStatus(roleStatus);
 			return roleManagerService.roleManagerPageQuery(condition, curPage);
 		}
 		catch (Exception e)
@@ -112,47 +82,8 @@ public class RoleManagerController extends BaseController
 
 	}
 
-	/**
-	 * 
-	 * Function    : 进入创建角色
-	 * LastUpdate  : 2016年5月30日
-	 * @return
-	 */
-	@RequestMapping(value = "/createRolePre")
-	public String createRolePre() throws ActionException
-	{
-		return "roleManager/createrole";
-	}
-
-	/**
-	 * 
-	 * Function    : 编辑角色信息
-	 * LastUpdate  : 2016年5月31日
-	 * @return
-	 */
-	@RequestMapping(value = "/updateRolePre")
-	public String updateRolePre(Integer roleId, Model model) throws ActionException
-	{
-		try
-		{
-			TmRolePO role = roleManagerService.findByroleId(roleId);
-			model.addAttribute("role", role);
-		}
-		catch (ServiceException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return "roleManager/updaterole";
-	}
-
-	/**
-	 *  根据ID查询角色信息
-	 * @param roleId
-	 * @return
-	 * @throws JsonException
-     */
-	@RequestMapping("getRoleInfoById")
+	@ApiOperation("根据ID查询角色信息")
+	@GetMapping("getRoleInfoById")
 	public @ResponseBody JsonResult getRoleInfoById(Integer roleId) throws JsonException
 	{
 		JsonResult result = new JsonResult();
@@ -168,14 +99,8 @@ public class RoleManagerController extends BaseController
 		}
 	}
 
-	/**
-	 * Function    : 角色信息保存
-	 * LastUpdate  : 2016年5月30日
-	 * @param user 保存内容
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/createRole")
+	@ApiOperation("创建角色信息")
+	@PostMapping(value = "/createRole")
 	public @ResponseBody
 	AjaxResult createRole(TmRolePO user) throws JsonException
 	{
@@ -190,14 +115,8 @@ public class RoleManagerController extends BaseController
 		}
 	}
 
-	/**
-	 * Function    :角色信息编辑
-	 * LastUpdate  : 2016年5月31日
-	 * @param role
-	 * @return
-	 * @throws IOException
-	 */
-	@RequestMapping(value = "/updateRole")
+	@ApiOperation("编辑角色信息")
+	@PostMapping(value = "/updateRole")
 	public @ResponseBody
 	AjaxResult updateRole(TmRolePO role) throws JsonException
 	{
@@ -212,15 +131,8 @@ public class RoleManagerController extends BaseController
 		}
 	}
 
-	/**
-	 * 
-	 * Function    : 删除角色
-	 * LastUpdate  : 2016年5月31日
-	 * @param roleId
-	 * @return
-	 * @throws ActionException
-	 */
-	@RequestMapping(value = "/deleteRole")
+	@ApiOperation("删除角色")
+	@PostMapping(value = "/deleteRole")
 	public @ResponseBody
 	JsonResult deleteRole(Integer roleId) throws JsonException
 	{
@@ -237,114 +149,9 @@ public class RoleManagerController extends BaseController
 		}
 	}
 
-	/**
-	 *  查询该角色所有的功能PRE
-	 * @return
-	 * @throws ActionException
-     */
-	@RequestMapping(value = "queryRelationFuncPre")
-	public String queryRelationFuncPre() throws ActionException
-	{
-		return "roleManager/funcrelationmanager";
-	}
-	
-	/**
-	 * 
-	 * Function    : 查询该角色所有的功能
-	 * LastUpdate  : 2016年9月22日
-	 * @param roleId
-	 * @return
-	 * @throws JsonException
-	 */
-	@RequestMapping(value = "/queryRelationFunc")
-	public @ResponseBody
-	List<TmFunctionPO> queryRelationFunc(Integer roleId) throws JsonException
-	{
-		try
-		{
-			return roleManagerService.queryRelationFunc(roleId);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new JsonException(e.getMessage(), e);
-		}
-	}
-	
-	/**
-	 * 
-	 * Function    : 删除该角色下功能
-	 * LastUpdate  : 2016年9月22日
-	 * @param roleId
-	 * @param functionId
-	 * @return
-	 * @throws JsonException
-	 */
-	@RequestMapping(value = "/deleteFuncRelation")
-	public @ResponseBody
-	AjaxResult deleteFuncRelation(Integer roleId, Integer functionId) throws JsonException
-	{
-		try
-		{
-			return roleManagerService.deleteRelationFunc(roleId, functionId);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new JsonException(e.getMessage(), e);
-		}
-	}
-	
-	/**
-	 * 
-	 * Function    : 查询该角色所有未分配功能
-	 * LastUpdate  : 2016年9月22日
-	 * @param roleId
-	 * @param functionName
-	 * @return
-	 * @throws JsonException
-	 */
-	@RequestMapping(value = "/queryUnRelationFunc")
-	public @ResponseBody
-	List<TmFunctionPO> queryUnRelationFunc(Integer roleId, String functionName) throws JsonException
-	{
-		try
-		{
-			return roleManagerService.queryUnRelationFunc(roleId, functionName);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new JsonException(e.getMessage(), e);
-		}
-	}
-	
-	/**
-	 * 
-	 * Function    : 创建角色与功能关系
-	 * LastUpdate  : 2016年9月22日
-	 * @param roleId
-	 * @param funcsStr
-	 * @return
-	 * @throws JsonException
-	 */
-	@RequestMapping(value = "/createRelation")
-	public @ResponseBody
-	AjaxResult createRelation(Integer roleId, String funcsStr) throws JsonException
-	{
-		try
-		{
-			return roleManagerService.createRelation(roleId, funcsStr, getLoginUser());
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-			throw new JsonException(e.getMessage(), e);
-		}
-	}
-
-	@RequestMapping("savePermission")
-	public @ResponseBody JsonResult savePermission(@RequestBody PermissionParam parameter) throws JsonException
+	@ApiOperation("保存该角色的菜单权限")
+	@PostMapping("savePermission")
+	public @ResponseBody JsonResult savePermission(@ApiParam("请求数据,包括角色ID和选中的菜单节点") @RequestBody PermissionParam parameter) throws JsonException
 	{
 		try
 		{
@@ -357,13 +164,8 @@ public class RoleManagerController extends BaseController
 		}
 	}
 
-	/**
-	 *	获取已选菜单
-	 * @param roleId
-	 * @return
-	 * @throws JsonResult
-     */
-	@RequestMapping("getCheckedPremission")
+	@ApiOperation("获取已选菜单")
+	@GetMapping("getCheckedPremission")
 	public @ResponseBody JsonResult getCheckedPremission(Integer roleId) throws JsonException
 	{
 		try

@@ -25,6 +25,8 @@
 
 package com.sandrew.boot.core.common;
 
+import io.swagger.annotations.ApiModelProperty;
+
 /**
  * Function    : 
  * @author     : SuMMeR
@@ -33,8 +35,10 @@ package com.sandrew.boot.core.common;
  */
 public class AjaxResult
 {
+	@ApiModelProperty("响应结果，表示是否处理成功")
 	protected boolean result;
 
+	@ApiModelProperty("返回消息，通常为错误消息")
 	protected String msg;
 
 	public AjaxResult requestSuccess()
