@@ -159,7 +159,7 @@ public class UserManagerController extends BaseController
     }
 
     @ApiOperation("查询该用户全部未关联角色")
-    @GetMapping(value = "/queryUnRelationRoles")
+    @PostMapping(value = "/queryUnRelationRoles")
     public
     @ResponseBody
     JsonResult queryUnRelationRoles(Integer userId, @ApiParam(name = "roleName", value = "过滤条件") String roleName) throws JsonException

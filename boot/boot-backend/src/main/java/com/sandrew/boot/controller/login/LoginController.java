@@ -54,6 +54,7 @@ public class LoginController extends BaseController
             {
                 errorMsg = "用户登录失败";
             }
+            result.requestFailure(errorMsg);
             log.error(e.getMessage(), e);
             throw new JsonException(errorMsg, e);
         }

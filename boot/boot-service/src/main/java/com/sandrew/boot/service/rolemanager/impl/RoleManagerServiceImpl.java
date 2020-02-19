@@ -218,14 +218,14 @@ public class RoleManagerServiceImpl implements RoleManagerService
         try
         {
             JsonResult result = new JsonResult();
-            List<TrUserRolePO> trUserRolePOs = roleManagerMapper.userRoleByRoleId(roleId);
-            List<TmFunctionPO> tmFunctionPOs = roleManagerMapper.roleFuncByRoleId(roleId);
-
-            if (trUserRolePOs.size() > 0 || tmFunctionPOs.size() > 0)
-            {
-                result.requestFailure("删除角色失败,请先解除关联关系");
-                return result;
-            }
+//            List<TrUserRolePO> trUserRolePOs = roleManagerMapper.userRoleByRoleId(roleId);
+//            List<TmFunctionPO> tmFunctionPOs = roleManagerMapper.roleFuncByRoleId(roleId);
+//
+//            if (trUserRolePOs.size() > 0 || tmFunctionPOs.size() > 0)
+//            {
+//                result.requestFailure("删除角色失败,请先解除关联关系");
+//                return result;
+//            }
             //int count = tmRoleMapper.deleteByPrimaryKey(roleId);
             TmRolePO value = new TmRolePO();
             value.setRoleId(roleId);

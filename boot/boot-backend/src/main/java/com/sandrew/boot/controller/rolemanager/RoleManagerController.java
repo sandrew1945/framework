@@ -144,7 +144,7 @@ public class RoleManagerController extends BaseController
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			log.error(e.getMessage(), e);
 			throw new JsonException(e.getMessage(), e);
 		}
 	}
