@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandrew.bootcas.mapper.login.LoginMapper" >
+	<resultMap id="BaseResultMap" type="com.sandrew.bootcas.model.TmUserPO" >
+		<id column="USER_ID" property="userId" jdbcType="INTEGER" />
+		<result column="USER_CODE" property="userCode" jdbcType="VARCHAR" />
+		<result column="USER_NAME" property="userName" jdbcType="VARCHAR" />
+		<result column="PASSWORD" property="password" jdbcType="VARCHAR" />
+		<result column="SEX" property="sex" jdbcType="INTEGER" />
+		<result column="PHONE" property="phone" jdbcType="VARCHAR" />
+		<result column="MOBILE" property="mobile" jdbcType="VARCHAR" />
+		<result column="EMAIL" property="email" jdbcType="VARCHAR" />
+		<result column="BIRTHDAY" property="birthday" jdbcType="DATE" />
+		<result column="USER_TYPE" property="userType" jdbcType="INTEGER" />
+		<result column="USER_STATUS" property="userStatus" jdbcType="INTEGER" />
+		<result column="CREATE_DATE" property="createDate" jdbcType="TIMESTAMP" />
+		<result column="CREATE_BY" property="createBy" jdbcType="INTEGER" />
+		<result column="UPDATE_DATE" property="updateDate" jdbcType="TIMESTAMP" />
+		<result column="UPDATE_BY" property="updateBy" jdbcType="INTEGER" />
+	</resultMap>
+	<resultMap id="RoleResultMap" type="com.sandrew.bootcas.core.bean.AclUserBean" >
+		<result column="ROLE_ID" property="roleId" jdbcType="INTEGER" />
+		<result column="ROLE_CODE" property="roleCode" jdbcType="VARCHAR" />
+		<result column="ROLE_NAME" property="roleName" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<!-- 登录后角色选择树 -->
+	<resultMap id="RoleChoiceResultMap" type="com.sandrew.bootcas.bean.RoleTreeNode" >
+    <result column="ID" jdbcType="VARCHAR" property="id" />
+    <result column="PID" jdbcType="VARCHAR" property="pId" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="ISPARENT" jdbcType="VARCHAR" property="isParent" />
+	</resultMap>
+	
+	<!-- 菜单结果集 -->
+    <resultMap id="MenuResultMap" type="com.sandrew.bootcas.bean.MenuBean" >
+    <id column="FUNCTION_ID" jdbcType="DECIMAL" property="funcId" />
+    <result column="FUNCTION_CODE" jdbcType="VARCHAR" property="funcCode" />
+    <result column="FUNCTION_NAME" jdbcType="VARCHAR" property="funcName" />
+    <result column="FATHER_FUNC" jdbcType="DECIMAL" property="parentId" />
+    <result column="ACCESS_URL" jdbcType="VARCHAR" property="functionUrl" />
+    <result column="ICON" jdbcType="VARCHAR" property="imgUrl" />
+    </resultMap>
+	
+	
+	<sql id="Base_Column_List" >
+	  user_id, user_code, user_name, password, sex, phone, mobile, email, birthday, user_type, 
+	  user_status, create_date, create_by, update_date, update_by
+	</sql>
+	<select id="selectByUserCode" resultMap="BaseResultMap" parameterType="com.sandrew.bootcas.model.TmUserPO" >
+		select
+		<include refid="Base_Column_List" />
+		from tm_user
+		where user_code = #{userCode}
+		and user_status = #{userStatus}
+	</select>
+
+	<!-- 根据代码查询用户所拥有的角色 -->
+	<select id="selectRoleByUserCode" resultMap="RoleResultMap" parameterType="string">
+		select tr.role_id,tr.role_code,tr.role_name from tm_user tu
+		left join tr_user_role tur on tu.user_id = tur.user_id
+		left join tm_role tr on tur.role_id = tr.role_id
+		where tu.user_status = 10011001
+		and tr.role_status = 10011001
+		and tu.is_delete = ${@com.sandrew.bootcas.core.common.Constants@IF_TYPE_NO}
+		and tr.is_delete = ${@com.sandrew.bootcas.core.common.Constants@IF_TYPE_NO}
+		and tu.user_code = #{_parameter}
+	</select>
+	<!-- 登录后如果有多个角色，角色选择树 -->
+	<select id="selectRoleForChoice" resultMap="RoleChoiceResultMap" parameterType="int">
+		select tr.role_id as id,tr.role_name as name, 0 as pid, 'false' as isparent
+		from tm_user tu
+		left join tr_user_role tur on tu.user_id = tur.user_id
+		left join tm_role tr on tur.role_id = tr.role_id
+		where tu.user_status = 10011001
+		and tu.is_delete = ${@com.sandrew.bootcas.core.common.Constants@IF_TYPE_NO}
+		and tr.is_delete = ${@com.sandrew.bootcas.core.common.Constants@IF_TYPE_NO}
+		and tr.role_status = 10011001
+		and tu.user_id = #{_parameter}
+	</select>
+
+	<select id="getMenuInfo" resultMap="MenuResultMap" parameterType="int" >
+		select distinct tf.function_id,
+		tf.function_code,
+		tf.function_name,
+		tf.father_func,
+		tf.access_url,
+		tf.icon
+		from tm_role tr, tr_role_func trf, tm_function tf
+		where tr.role_id = trf.role_id
+		and trf.function_id = tf.function_id
+		and tr.role_status = 10011001
+		and tf.function_status = 10011001
+		and tr.role_id = #{_parameter}
+		order by function_order
+	</select>
+	<!--  分页查询List -->
+	<select id="pageQueryUser" resultMap="BaseResultMap" parameterType="pager">
+		select
+		<include refid="Base_Column_List" />
+		from tm_user
+	</select>
+</mapper>

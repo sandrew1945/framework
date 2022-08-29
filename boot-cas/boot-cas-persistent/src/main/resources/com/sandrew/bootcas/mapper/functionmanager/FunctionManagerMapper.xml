@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.sandrew.bootcas.mapper.functionmanager.FunctionManagerMapper" >
+	
+    <!--  分页查询List -->
+    <select id="functionManagerPageQuery" resultType="com.sandrew.bootcas.bean.FunctionBean" parameterType="pager">
+        SELECT tf.*, ta.application_name FROM tm_function tf LEFT JOIN tm_application ta ON tf.application_id = ta.application_id
+        WHERE 1 = 1
+        AND tf.is_delete = ${@com.sandrew.bootcas.core.common.Constants@IF_TYPE_NO}
+        AND tf.function_type = ${@com.sandrew.bootcas.core.common.Constants@FUNC_TYPE_MENU}
+        <if test="condition.functionStatus != '' and condition.functionStatus != null">
+        AND tf.function_status = #{condition.functionStatus}
+        </if>
+        <if test="condition.functionCode != '' and condition.functionCode != null">
+        AND tf.function_code LIKE CONCAT('%',#{condition.functionCode},'%')
+        </if>
+        <if test="condition.functionName != '' and condition.functionName != null">
+        AND tf.function_name LIKE CONCAT('%',#{condition.functionName},'%')
+        </if>
+        <if test="condition.applicationId != '' and condition.applicationId != null">
+            AND ta.application_id = #{condition.applicationId}
+        </if>
+	</select>
+</mapper>
