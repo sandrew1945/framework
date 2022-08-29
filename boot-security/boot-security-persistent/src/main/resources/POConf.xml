@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PO_CONFIG>
+	<DB_CONNECTION TYPE="mysql" VALID="TRUE">
+		<PROPERTY NAME="DB_URL">jdbc:mysql://192.18.71.127:33061/privatelyfund</PROPERTY>
+		<PROPERTY NAME="DB_USER">root</PROPERTY>
+		<PROPERTY NAME="DB_PASSWORD">acm@123456</PROPERTY>
+	</DB_CONNECTION>
+
+	<GEN_PO_PATH NAME="/Users/summer/Documents/Projects/study/DevFrameworkBaseProj/boot-security/boot-security-persistent/src/main/java/com/sandrew/bootsec/model/" />
+
+	<TABLES PACKAGE="com.sandrew.bootsec.model" IS_GENERATOR="TRUE">
+		<TABLE TAB_NAME="tm_func_front" PO_NAME="TmFuncFrontPO"></TABLE>
+		<TABLE TAB_NAME="tm_role" PO_NAME="TmRolePO"></TABLE>
+		<TABLE TAB_NAME="tm_user" PO_NAME="TmUserPO"></TABLE>
+		<TABLE TAB_NAME="tm_function" PO_NAME="TmFunctionPO"></TABLE>
+		<TABLE TAB_NAME="tr_user_role" PO_NAME="TrUserRolePO"></TABLE>
+	</TABLES>
+</PO_CONFIG>
