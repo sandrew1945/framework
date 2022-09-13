@@ -15,7 +15,8 @@ import java.util.concurrent.TimeUnit;
 @Log4j2
 public class RedisUtil
 {
-    @Resource RedisUtilPro redisUtilPro;
+    @Resource
+    private RedisUtilPro redisUtilPro;
 
 
     /**
