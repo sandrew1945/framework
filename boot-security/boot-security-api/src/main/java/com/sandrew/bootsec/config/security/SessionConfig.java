@@ -9,7 +9,7 @@
  * 作者姓名           修改时间           版本号              描述
  **/
 
-package com.sandrew.bootsec.config;
+package com.sandrew.bootsec.config.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;

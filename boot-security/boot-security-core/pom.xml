@@ -199,6 +199,10 @@
             <artifactId>fluent-hc</artifactId>
             <version>4.5.3</version>
         </dependency>
+        <dependency>
+            <groupId>cn.nesc</groupId>
+            <artifactId>common-tool</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

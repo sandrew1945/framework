@@ -9,7 +9,7 @@
  * 作者姓名           修改时间           版本号              描述
  **/
 
-package com.sandrew.bootsec.config;
+package com.sandrew.bootsec.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,6 +17,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.annotation.Resource;
 
 /**
  * @ClassName WebSecurityConfig
@@ -28,15 +30,43 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter
 {
 
+    @Resource
+    private MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+
+    @Resource
+    private MyAuthenticationFailureHandler myAuthenticationFailureHandler;
+
+    @Resource
+    private MyAuthenticationSuccessHandler myAuthenticationSuccessHandler;
+
+    @Resource
+    private MyLogoutSuccessHandler myLogoutSuccessHandler;
+
+    @Resource
+    private MyAccessDeniedHandler myAccessDeniedHandler;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception
     {
-        http.formLogin()
-//                .loginPage("/login").permitAll()
+//        http.authorizeRequests()
+//                .antMatchers("/*").hasAnyRole();
+        http.cors().and().csrf().disable();
+
+        http.formLogin().loginProcessingUrl("/login")
+                .permitAll().failureHandler(myAuthenticationFailureHandler).successHandler(myAuthenticationSuccessHandler)
                 .and().authorizeRequests()
-                .anyRequest().authenticated();
+                .anyRequest().authenticated()
+                .and()
+                .logout().permitAll()
+                .logoutSuccessHandler(myLogoutSuccessHandler)
+                .deleteCookies("JSESSIONID");   // 删除cookie
+
         http.sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+
+        http.exceptionHandling()
+                .accessDeniedHandler(myAccessDeniedHandler)
+                .authenticationEntryPoint(myAuthenticationEntryPoint);
     }
     // @formatter:off
     //    @Bean

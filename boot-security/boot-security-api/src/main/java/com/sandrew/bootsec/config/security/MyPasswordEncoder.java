@@ -9,7 +9,7 @@
  * 作者姓名           修改时间           版本号              描述
  **/
 
-package com.sandrew.bootsec.config;
+package com.sandrew.bootsec.config.security;
 
 import com.sandrew.bootsec.core.util.MD5Encrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;

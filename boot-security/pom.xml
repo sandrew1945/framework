@@ -45,7 +45,7 @@
         <bouncycastle.version>1.62</bouncycastle.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <hibernate-validator.version>6.0.1.Final</hibernate-validator.version>
-
+        <common-tool.version>1.0-SNAPSHOT</common-tool.version>
     </properties>
 
     <dependencyManagement>
@@ -304,7 +304,11 @@
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>cn.nesc</groupId>
+                <artifactId>common-tool</artifactId>
+                <version>${common-tool.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
