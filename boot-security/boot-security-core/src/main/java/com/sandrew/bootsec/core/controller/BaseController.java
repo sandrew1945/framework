@@ -5,6 +5,7 @@ import com.sandrew.bootsec.core.security.MyUser;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -41,6 +42,10 @@ public class BaseController
         {
             username = ((UserDetails) principal).getUsername();
         }
+        else if (principal instanceof OAuth2User)
+        {
+            username = ((OAuth2User) principal).getName();
+        }
         else
         {
             username = principal.toString();
@@ -58,6 +63,14 @@ public class BaseController
             loginUser.setMobile(myUser.getMobile());
             loginUser.setEmail(myUser.getEmail());
             loginUser.setAvatarPath(myUser.getAvatarPath());
+        }
+        else if (principal instanceof OAuth2User)
+        {
+            OAuth2User oAuth2User = (OAuth2User) principal;
+            loginUser.setUserName(oAuth2User.getAttributes().get("nickname").toString());
+            loginUser.setPhone(oAuth2User.getAttributes().get("phone_number").toString());
+            loginUser.setMobile(oAuth2User.getAttributes().get("phone_number").toString());
+            loginUser.setEmail(oAuth2User.getAttributes().get("email").toString());
         }
         return loginUser;
     }

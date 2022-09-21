@@ -7,6 +7,11 @@ import com.sandrew.bootsec.core.exception.JsonException;
 import com.sandrew.bootsec.core.exception.ServiceException;
 import com.sandrew.bootsec.service.LoginService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -24,36 +29,46 @@ public class LoginController extends BaseController
     private LoginService loginService;
 
 
-//    @PostMapping(value = "/login")
-//    public JsonResult login(String userCode, String password) throws JsonException
-//    {
-//        JsonResult result = new JsonResult();
-//        try
-//        {
-//            TmUserPO user = new TmUserPO();
-//            user.setUserCode(userCode);
-//            user.setPassword(password);
-//            result = result.requestSuccess(loginService.login(user));
-//        }
-//        catch (Exception e)
-//        {
-//            String errorMsg = null;
-//            if (e instanceof ServiceException)
-//            {
-//                errorMsg = "用户名或密码错误";
-//            }
-//            else
-//            {
-//                errorMsg = "用户登录失败";
-//            }
-//            result.requestFailure(errorMsg);
-//            log.error(e.getMessage(), e);
-//        }
-//        return result;
-//    }
+    @GetMapping("/")
+    public String index(Model model, @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient, @AuthenticationPrincipal OAuth2User oauth2User)
+    {
+        model.addAttribute("userName", oauth2User.getName());
+        model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
+        model.addAttribute("userAttributes", oauth2User.getAttributes());
+        return "index";
+    }
+
+    //    @PostMapping(value = "/login")
+    //    public JsonResult login(String userCode, String password) throws JsonException
+    //    {
+    //        JsonResult result = new JsonResult();
+    //        try
+    //        {
+    //            TmUserPO user = new TmUserPO();
+    //            user.setUserCode(userCode);
+    //            user.setPassword(password);
+    //            result = result.requestSuccess(loginService.login(user));
+    //        }
+    //        catch (Exception e)
+    //        {
+    //            String errorMsg = null;
+    //            if (e instanceof ServiceException)
+    //            {
+    //                errorMsg = "用户名或密码错误";
+    //            }
+    //            else
+    //            {
+    //                errorMsg = "用户登录失败";
+    //            }
+    //            result.requestFailure(errorMsg);
+    //            log.error(e.getMessage(), e);
+    //        }
+    //        return result;
+    //    }
 
     /**
-     *  获取用户信息
+     * 获取用户信息
+     *
      * @return
      * @throws JsonException
      */
@@ -73,7 +88,8 @@ public class LoginController extends BaseController
     }
 
     /**
-     *  获取经办人信息
+     * 获取经办人信息
+     *
      * @return
      * @throws JsonException
      */
@@ -107,14 +123,13 @@ public class LoginController extends BaseController
     }
 
     @PostMapping(value = "/logout")
-    public
-    @ResponseBody
+    public @ResponseBody
     JsonResult logout() throws JsonException
     {
         try
         {
             JsonResult result = new JsonResult();
-//            loginService.logout();
+            //            loginService.logout();
             return result.requestSuccess(true);
         }
         catch (Exception e)

@@ -11,8 +11,8 @@
 
 package com.sandrew.bootsec.config.security;
 
+import cn.nesc.toolkit.common.json.JsonUtil;
 import com.sandrew.bootsec.core.common.JsonResult;
-import com.sandrew.bootsec.core.util.JsonUtil;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -29,7 +29,7 @@ import java.io.IOException;
  * @Date 2022/9/13 10:30
  **/
 @Component
-public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint
+public class JSONAuthenticationEntryPoint implements AuthenticationEntryPoint
 {
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException

@@ -19,6 +19,7 @@ public class RedisUtil
     private RedisUtilPro redisUtilPro;
 
 
+
     /**
      * @Description: 批量删除缓存
      * @Author: hj
