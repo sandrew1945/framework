@@ -11,6 +11,8 @@
 
 package com.sandrew.bootsec.config.security;
 
+import cn.nesc.toolkit.common.json.JsonUtil;
+import com.sandrew.bootsec.core.common.JsonResult;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -27,11 +29,30 @@ import java.io.IOException;
  * @Date 2022/9/13 10:30
  **/
 @Component
-public class OAuthAuthenticationEntryPoint implements AuthenticationEntryPoint
+public class UnauthorizedEntryPoint implements AuthenticationEntryPoint
 {
     @Override
     public void commence(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException
     {
-        httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/oauth2/authorization/okta");
+        String contentType = httpServletResponse.getHeader("Content-Type");
+        if (null != contentType)
+        {
+            // 如果是json
+            if (contentType.contains("application/json"))
+            {
+                JsonResult result = new JsonResult();
+                result.requestFailure("Not logged in");
+                httpServletResponse.setContentType("text/json;charset=utf-8");
+                httpServletResponse.getWriter().write(JsonUtil.javaObject2String(result));
+            }
+            else
+            {
+                httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/oauth2/authorization/okta");
+            }
+        }
+        else
+        {
+            throw new ServletException("Content-Type is undefined ", e);
+        }
     }
 }

@@ -44,6 +44,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     private OAuthAuthenticationEntryPoint oauthAuthenticationEntryPoint;    // oauth2模式下的认证异常处理
 
     @Resource
+    private UnauthorizedEntryPoint unauthorizedEntryPoint;
+
+    @Resource
     private MyAuthenticationFailureHandler myAuthenticationFailureHandler;
 
     @Resource
@@ -58,11 +61,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     @Override
     protected void configure(HttpSecurity http) throws Exception
     {
-//        http.authorizeRequests()
-//                .antMatchers("/*").hasAnyRole();
         http.cors().and().csrf().disable();
 
-        http.oauth2Login(
+        http.formLogin().loginProcessingUrl("/login")
+//            .permitAll()
+            .failureHandler(myAuthenticationFailureHandler)     // 登录认证失败handler
+            .successHandler(myAuthenticationSuccessHandler)     // 登录成功handler
+        .and()
+            .authorizeRequests()
+            .antMatchers("/login/oauth2/**").permitAll()
+            .antMatchers("/oauth2/**").permitAll()
+//            .anyRequest().authenticated()
+        .and()
+            .logout().permitAll()
+            .logoutSuccessHandler(myLogoutSuccessHandler)
+            .deleteCookies("JSESSIONID")   // 删除cookie
+        .and()
+            .oauth2Login(
                 httpSecurityOAuth2LoginConfigurer -> {
                     // 覆盖获取accessToken的client
                     httpSecurityOAuth2LoginConfigurer.tokenEndpoint(tokenEndpointConfig -> {
@@ -73,45 +88,95 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
                         userInfoEndpointConfig.userService(new IDAASOAuth2UserService());
                     });
                 }
-        )
-        .authorizeRequests()
-//        .antMatchers("/").permitAll()
-        .antMatchers("/login/oauth2/**").permitAll()
-        .antMatchers("/oauth2/**").permitAll()
-        .anyRequest().authenticated()
-        .and()
-        .logout().permitAll()
-        .logoutSuccessHandler(myLogoutSuccessHandler)
-        .deleteCookies("JSESSIONID");   // 删除cookie
-
-//        .oauth2Login()
-//        .permitAll()//.failureHandler(myAuthenticationFailureHandler).successHandler(myAuthenticationSuccessHandler)
-//        .and().authorizeRequests()
-//        .antMatchers("/").permitAll()
-//        .antMatchers("/login/oauth2/code/okta").permitAll()
-//        .anyRequest().authenticated()
-//        .and()
-//        .logout().permitAll()
-//        .logoutSuccessHandler(myLogoutSuccessHandler)
-//        .deleteCookies("JSESSIONID");   // 删除cookie
-
+            )
+            .authorizeRequests()
+            .antMatchers("/login/oauth2/**").permitAll()
+            .antMatchers("/oauth2/**").permitAll()
+            .anyRequest().authenticated();
         http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED);
 
         http.exceptionHandling()
                 .accessDeniedHandler(myAccessDeniedHandler)
                 .authenticationEntryPoint(oauthAuthenticationEntryPoint);
     }
-    // @formatter:off
-    //    @Bean
-    //    public UserDetailsService userDetailsService() {
-    //        UserDetails user = User.withDefaultPasswordEncoder()
-    //                .username("user")
-    //                .password("password")
-    //                .roles("USER")
-    //                .build();
-    //        return  new InMemoryUserDetailsManager(user);
-    //    }
+
+
+    /*
+    @Configuration
+    @Order(2)
+    class OAuth2SecurityConfigurerAdapter extends WebSecurityConfigurerAdapter
+    {
+        private final String LOGIN_URL = "/oauth2/**";
+
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+//            http.cors().and().csrf().disable();
+
+            http
+                    .antMatcher(LOGIN_URL)
+                    .oauth2Login(
+                            httpSecurityOAuth2LoginConfigurer -> {
+                                // 覆盖获取accessToken的client
+                                httpSecurityOAuth2LoginConfigurer.tokenEndpoint(tokenEndpointConfig -> {
+                                    tokenEndpointConfig.accessTokenResponseClient(new IDAASAuthorizationCodeTokenResponseClient());
+                                });
+                                // 覆盖解析user信息的service
+                                httpSecurityOAuth2LoginConfigurer.userInfoEndpoint(userInfoEndpointConfig -> {
+                                    userInfoEndpointConfig.userService(new IDAASOAuth2UserService());
+                                });
+                            }
+                    )
+                    .authorizeRequests()
+                    //        .antMatchers("/").permitAll()
+                    .antMatchers("/login/oauth2/**").permitAll()
+                    .antMatchers("/oauth2/**").permitAll()
+                    .anyRequest().authenticated()
+                    .and()
+                    .logout().permitAll()
+                    .logoutSuccessHandler(myLogoutSuccessHandler)
+                    .deleteCookies("JSESSIONID");   // 删除cookie
+
+            http.sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+
+            http.exceptionHandling()
+                    .accessDeniedHandler(myAccessDeniedHandler)
+                    .authenticationEntryPoint(oauthAuthenticationEntryPoint);
+        }
+    }
+
+    @Configuration
+    @Order(1)
+    class FormLoginWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter
+    {
+        private final String LOGIN_URL = "/login";
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            http.cors().and().csrf().disable();
+            http
+                    .antMatcher(LOGIN_URL)
+                    .formLogin()//.loginProcessingUrl("/login")
+                    .permitAll().failureHandler(myAuthenticationFailureHandler).successHandler(myAuthenticationSuccessHandler)
+                    .and().authorizeRequests()
+                    .anyRequest().authenticated()
+                    .and()
+                    .logout().permitAll()
+                    .logoutSuccessHandler(myLogoutSuccessHandler)
+                    .deleteCookies("JSESSIONID");   // 删除cookie
+
+            http.sessionManagement()
+                    .sessionCreationPolicy(SessionCreationPolicy.ALWAYS);
+
+            http.exceptionHandling()
+                    .accessDeniedHandler(myAccessDeniedHandler)
+                    .authenticationEntryPoint(jsonAuthenticationEntryPoint);
+        }
+    }
+    */
+
 
 
     @Bean
@@ -119,15 +184,5 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter
     {
         return new MyPasswordEncoder();
     }
-
-//    @Bean
-//    public ClientRegistrationRepository clientRegistrationRepository() {
-//        List<ClientRegistration> registrations = clients.stream()
-//                .map(c -> getRegistration(c))
-//                .filter(registration -> registration != null)
-//                .collect(Collectors.toList());
-//
-//        return new InMemoryClientRegistrationRepository(registrations);
-//    }
 
 }

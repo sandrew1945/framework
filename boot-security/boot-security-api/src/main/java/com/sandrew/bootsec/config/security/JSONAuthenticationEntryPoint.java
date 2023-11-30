@@ -36,7 +36,7 @@ public class JSONAuthenticationEntryPoint implements AuthenticationEntryPoint
     {
         JsonResult result = new JsonResult();
         result.requestFailure("Not logged in");
-        httpServletResponse.setContentType("httpServletResponse");
+        httpServletResponse.setContentType("text/json;charset=utf-8");
         httpServletResponse.getWriter().write(JsonUtil.javaObject2String(result));
     }
 }
